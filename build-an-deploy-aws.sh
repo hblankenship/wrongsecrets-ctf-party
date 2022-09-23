@@ -11,6 +11,9 @@ echo "NOTE2: please replace balancer.cookie.cookieParserSecret witha value you f
 
 echo "Usage: ./build-an-deploy-aws.sh"
 
+source /scripts/check-available-commands.sh
+checkCommandsAvailable helm aws kubectl
+
 version="$(uuidgen)"
 AWS_REGION="eu-west-1"
 
@@ -21,7 +24,6 @@ kubectl apply -f https://raw.githubusercontent.com/aws/secrets-store-csi-driver-
 echo "preparing calico via Helm"
 helm repo add projectcalico https://docs.projectcalico.org/charts
 helm upgrade --install calico projectcalico/tigera-operator --version v3.21.4
-
 
 echo "Generate secrets manager challenge secret 2"
 aws secretsmanager put-secret-value --secret-id wrongsecret-2 --secret-string "$(openssl rand -base64 24)" --region $AWS_REGION --output json --no-cli-pager
