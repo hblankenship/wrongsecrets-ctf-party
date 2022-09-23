@@ -7,6 +7,7 @@ const {
   RbacAuthorizationV1Api,
   NetworkingV1Api,
 } = require('@kubernetes/client-node');
+const { response } = require('express');
 const kc = new KubeConfig();
 kc.loadFromCluster();
 
@@ -514,7 +515,66 @@ module.exports.createAWSDeploymentForTeam = createAWSDeploymentForTeam;
 
 //END AWS
 
+const getKubernetesEndpointToWhitelist = async () => {
+  const {
+    response: { body: {subsets} },
+  } = await k8sCoreApi.readNamespacedEndpoints('kubernetes', 'default');
+  logger.info(JSON.stringify(subsets));
+  return subsets.flatMap(subset => subset.addresses.map(address => address.ip))
+};
+
 const createNSPsforTeam = async (team) => {
+  
+  const ipaddresses = await getKubernetesEndpointToWhitelist();
+
+  const nspAllowkubectl = {
+      apiVersion: "networking.k8s.io/v1",
+      kind: "NetworkPolicy",
+      metadata: {
+        name: "access-ip-from-virtualdeskop",
+        namespace: `t-${team}`
+      },
+      spec: {
+        podSelector: {
+          matchLabels: {
+            app: "virtualdesktop"
+          }
+        },
+        egress: [
+          {
+            to: ipaddresses.map(address => ({
+              ipBlock: {
+                cidr: `${address}/32`
+              }
+            })),
+            ports: [
+              {
+                port: 443,
+                protocol: "TCP"
+              },
+              {
+                port: 8443,
+                protocol: "TCP"
+              },
+              {
+                port: 80,
+                protocol: "TCP"
+              },
+              {
+                port: 10250,
+                protocol: "TCP"
+              },
+              {
+                port: 53,
+                protocol: "UDP"
+              }
+            ]
+          }
+        ]
+      }
+  };
+  
+  
   const nspDefaultDeny = {
     apiVersion: 'networking.k8s.io/v1',
     kind: 'NetworkPolicy',
@@ -842,6 +902,14 @@ const createNSPsforTeam = async (team) => {
       ],
     },
   };
+
+  await k8sNetworkingApi
+    .createNamespacedNetworkPolicy(`t-${team}`, nspAllowkubectl)
+    .catch((error) => {
+      throw new Error(JSON.stringify(error));
+    });
+
+  logger.info(JSON.stringify(nspAllowkubectl));
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nspDefaultDeny)
     .catch((error) => {
