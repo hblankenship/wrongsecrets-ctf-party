@@ -7,7 +7,6 @@ const {
   RbacAuthorizationV1Api,
   NetworkingV1Api,
 } = require('@kubernetes/client-node');
-const { response } = require('express');
 const kc = new KubeConfig();
 kc.loadFromCluster();
 
@@ -517,64 +516,64 @@ module.exports.createAWSDeploymentForTeam = createAWSDeploymentForTeam;
 
 const getKubernetesEndpointToWhitelist = async () => {
   const {
-    response: { body: {subsets} },
+    response: {
+      body: { subsets },
+    },
   } = await k8sCoreApi.readNamespacedEndpoints('kubernetes', 'default');
   logger.info(JSON.stringify(subsets));
-  return subsets.flatMap(subset => subset.addresses.map(address => address.ip))
+  return subsets.flatMap((subset) => subset.addresses.map((address) => address.ip));
 };
 
 const createNSPsforTeam = async (team) => {
-  
   const ipaddresses = await getKubernetesEndpointToWhitelist();
 
   const nspAllowkubectl = {
-      apiVersion: "networking.k8s.io/v1",
-      kind: "NetworkPolicy",
-      metadata: {
-        name: "access-ip-from-virtualdeskop",
-        namespace: `t-${team}`
-      },
-      spec: {
-        podSelector: {
-          matchLabels: {
-            app: "virtualdesktop"
-          }
+    apiVersion: 'networking.k8s.io/v1',
+    kind: 'NetworkPolicy',
+    metadata: {
+      name: 'access-kubectl-from-virtualdeskop',
+      namespace: `t-${team}`,
+    },
+    spec: {
+      podSelector: {
+        matchLabels: {
+          app: 'virtualdesktop',
         },
-        egress: [
-          {
-            to: ipaddresses.map(address => ({
-              ipBlock: {
-                cidr: `${address}/32`
-              }
-            })),
-            ports: [
-              {
-                port: 443,
-                protocol: "TCP"
-              },
-              {
-                port: 8443,
-                protocol: "TCP"
-              },
-              {
-                port: 80,
-                protocol: "TCP"
-              },
-              {
-                port: 10250,
-                protocol: "TCP"
-              },
-              {
-                port: 53,
-                protocol: "UDP"
-              }
-            ]
-          }
-        ]
-      }
+      },
+      egress: [
+        {
+          to: ipaddresses.map((address) => ({
+            ipBlock: {
+              cidr: `${address}/32`,
+            },
+          })),
+          ports: [
+            {
+              port: 443,
+              protocol: 'TCP',
+            },
+            {
+              port: 8443,
+              protocol: 'TCP',
+            },
+            {
+              port: 80,
+              protocol: 'TCP',
+            },
+            {
+              port: 10250,
+              protocol: 'TCP',
+            },
+            {
+              port: 53,
+              protocol: 'UDP',
+            },
+          ],
+        },
+      ],
+    },
   };
-  
-  
+
   const nspDefaultDeny = {
     apiVersion: 'networking.k8s.io/v1',
     kind: 'NetworkPolicy',
@@ -839,7 +838,7 @@ const createNSPsforTeam = async (team) => {
     kind: 'NetworkPolicy',
     metadata: {
       name: 'kubectl-policy',
-      namespace: 't-admin1',
+      namespace: `t-${team}`,
     },
     spec: {
       podSelector: {
@@ -870,7 +869,7 @@ const createNSPsforTeam = async (team) => {
             {
               namespaceSelector: {
                 matchLabels: {
-                  'kubernetes.io/metadata.name': 't-admin1',
+                  'kubernetes.io/metadata.name': `t-${team}`,
                 },
               },
               podSelector: {},
@@ -892,7 +891,7 @@ const createNSPsforTeam = async (team) => {
             {
               namespaceSelector: {
                 matchLabels: {
-                  'kubernetes.io/metadata.name': 't-admin1',
+                  'kubernetes.io/metadata.name': `t-${team}`,
                 },
               },
               podSelector: {},
@@ -903,42 +902,47 @@ const createNSPsforTeam = async (team) => {
     },
   };
 
+  logger.info(`applying nspAllowkubectl for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nspAllowkubectl)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
-
-  logger.info(JSON.stringify(nspAllowkubectl));
+  logger.info(`applying nspDefaultDeny for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nspDefaultDeny)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
+  logger.info(`applying nsAllowOnlyDNS for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowOnlyDNS)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
+  logger.info(`applying nsAllowBalancer for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowBalancer)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
+  logger.info(`applying nsAllowWrongSecretstoVirtualDesktop for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowWrongSecretstoVirtualDesktop)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
+  logger.info(`applying nsAllowVirtualDesktoptoWrongSecrets for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowVirtualDesktoptoWrongSecrets)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
-  await k8sNetworkingApi.createNamespacedNetworkPolicy(`t-${team}`, broaderallow)
-  .catch((error) => {
+  logger.info(`applying broaderallow for ${team}`);
+  await k8sNetworkingApi.createNamespacedNetworkPolicy(`t-${team}`, broaderallow).catch((error) => {
     throw new Error(JSON.stringify(error));
   });
+  logger.info(`applying nsAllowToDoKubeCTLFromWebTop for ${team}`);
   return k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowToDoKubeCTLFromWebTop)
     .catch((error) => {
