@@ -6,7 +6,7 @@ echo "For example docker-desktop with its included k8s cluster"
 
 echo "Usage: ./build-an-deploy.sh"
 
-source /scripts/check-available-commands.sh
+source ./scripts/check-available-commands.sh
 checkCommandsAvailable helm docker kubectl
 
 version="$(uuidgen)"

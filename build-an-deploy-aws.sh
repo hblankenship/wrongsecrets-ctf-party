@@ -11,7 +11,7 @@ echo "NOTE2: please replace balancer.cookie.cookieParserSecret witha value you f
 
 echo "Usage: ./build-an-deploy-aws.sh"
 
-source /scripts/check-available-commands.sh
+source ./scripts/check-available-commands.sh
 checkCommandsAvailable helm aws kubectl
 
 version="$(uuidgen)"
