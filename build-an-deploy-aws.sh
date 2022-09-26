@@ -55,6 +55,7 @@ echo "Installing iamserviceaccount"
 
 eksctl create iamserviceaccount \
   --cluster=$CLUSTERNAME \
+  --region=$AWS_REGION \
   --namespace=kube-system \
   --name=cluster-autoscaler \
   --attach-policy-arn=arn:aws:iam::${ACCOUNT_ID}:policy/AmazonEKSClusterAutoscalerPolicy \
