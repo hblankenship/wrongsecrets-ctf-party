@@ -46,25 +46,24 @@ export const JoinPage = injectIntl(({ intl }) => {
   const { formatMessage } = intl;
 
   async function sendJoinRequest() {
-    if (window.confirm('Are you ready?')) {
-      try {
-        const hmacvalue = cryptoJS
-          .HmacSHA256(`${teamname}`, 'hardcodedkey')
-          .toString(cryptoJS.enc.Hex);
-        const { data } = await axios.post(`/balancer/teams/${teamname}/join`, {
-          passcode,
-          hmacvalue,
-        });
-        navigate(`/teams/${teamname}/joined/`, { state: { passcode: data.passcode } });
-      } catch (error) {
-        if (
-          error.response.status === 401 &&
-          error.response.data.message === 'Team requires authentication to join'
-        ) {
-          navigate(`/teams/${teamname}/joining/`);
-        } else {
-          setFailed(true);
-        }
+    try {
+      const hmacvalue = cryptoJS
+        .HmacSHA256(`${teamname}`, 'hardcodedkey')
+        .toString(cryptoJS.enc.Hex);
+      const { data } = await axios.post(`/balancer/teams/${teamname}/join`, {
+        passcode,
+        hmacvalue,
+        password,
+      });
+      navigate(`/teams/${teamname}/joined/`, { state: { passcode: data.passcode } });
+    } catch (error) {
+      if (
+        error.response.status === 401 &&
+        error.response.data.message === 'Team requires authentication to join'
+      ) {
+        navigate(`/teams/${teamname}/joining/`);
+      } else {
+        setFailed(true);
       }
     }
   }
@@ -80,6 +79,7 @@ export const JoinPage = injectIntl(({ intl }) => {
     heroku_wrongsecret_ctf_url: process.env['REACT_APP_HEROKU_WRONGSECRETS_URL'],
     ctfd_url: process.env['REACT_APP_CTFD_URL'],
     s3_bucket_url: process.env['REACT_APP_S3_BUCKET_URL'],
+    enable_password: false,
   };
 
   const [dynamics, setDynamics] = useState(initialDynamics);
@@ -180,6 +180,21 @@ export const JoinPage = injectIntl(({ intl }) => {
             data-test-id="teamname-input"
             name="teamname"
             value={teamname}
+            title={formatMessage(messages.teamnameValidationConstraints)}
+            pattern="^[a-z0-9]([-a-z0-9])+[a-z0-9]$"
+            maxLength="16"
+            onChange={({ target }) => setTeamname(target.value)}
+          />
+          <Label htmlFor="password">
+            <FormattedMessage id="password" defaultMessage="Password" />
+          </Label>
+          <Input
+            type="text"
+            id="password"
+            data-test-id="password-input"
+            name="password"
+            enabled={dynamics.enable_password}
+            value={password}
             title={formatMessage(messages.teamnameValidationConstraints)}
             pattern="^[a-z0-9]([-a-z0-9])+[a-z0-9]$"
             maxLength="16"
