@@ -7,7 +7,7 @@ const basicAuth = require('basic-auth-connect');
 const onFinished = require('on-finished');
 
 const { get, extractTeamName } = require('./config');
-const accessPassword = process.env.ACCESS_PASSWORD | '';
+const { logger } = require('./logger');
 
 const app = express();
 
@@ -53,9 +53,11 @@ const proxyRoutes = require('./proxy/proxy');
 const scoreBoard = require('./score-board/score-board');
 
 app.get('/balancer/dynamics', (req, res) => {
-  var usePassword = false;
+  const accessPassword = process.env['REACT_APP_ACCESS_PASSWORD'];
+  logger.info(`password: ${accessPassword}`);
+  var usePassword = false;  
   if (!accessPassword || accessPassword.length === 0) {
-    //nothign ofr now
+    //nothign for now
   } else {
     usePassword = true;
   }

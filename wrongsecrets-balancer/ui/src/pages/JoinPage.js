@@ -16,6 +16,10 @@ const messages = defineMessages({
     id: 'teamname_validation_constraints',
     defaultMessage: "Teamnames must consist of lowercase letter, number or '-'",
   },
+  passwordValidationConstraints: {
+    id: 'password_validation_constraints',
+    defaultMessage: 'Passwords must consist of alphanumeric characters only',
+  },
 });
 
 const CenterLogo = styled.img`
@@ -27,6 +31,7 @@ const CenterLogo = styled.img`
 
 export const JoinPage = injectIntl(({ intl }) => {
   const [teamname, setTeamname] = useState('');
+  const [password, setPassword] = useState('');
   const [failed, setFailed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,15 +52,26 @@ export const JoinPage = injectIntl(({ intl }) => {
 
   async function sendJoinRequest() {
     try {
-      const hmacvalue = cryptoJS
-        .HmacSHA256(`${teamname}`, 'hardcodedkey')
-        .toString(cryptoJS.enc.Hex);
-      const { data } = await axios.post(`/balancer/teams/${teamname}/join`, {
-        passcode,
-        hmacvalue,
-        password,
-      });
-      navigate(`/teams/${teamname}/joined/`, { state: { passcode: data.passcode } });
+      if (dynamics.enable_password) {
+        const hmacvalue = cryptoJS
+          .HmacSHA256(`${teamname}`, 'hardcodedkey')
+          .toString(cryptoJS.enc.Hex);
+        const { data } = await axios.post(`/balancer/teams/${teamname}/join`, {
+          passcode,
+          hmacvalue,
+          password,
+        });
+        navigate(`/teams/${teamname}/joined/`, { state: { passcode: data.passcode } });
+      } else {
+        const hmacvalue = cryptoJS
+          .HmacSHA256(`${teamname}`, 'hardcodedkey')
+          .toString(cryptoJS.enc.Hex);
+        const { data } = await axios.post(`/balancer/teams/${teamname}/join`, {
+          passcode,
+          hmacvalue,
+        });
+        navigate(`/teams/${teamname}/joined/`, { state: { passcode: data.passcode } });
+      }
     } catch (error) {
       if (
         error.response.status === 401 &&
@@ -185,7 +201,9 @@ export const JoinPage = injectIntl(({ intl }) => {
             maxLength="16"
             onChange={({ target }) => setTeamname(target.value)}
           />
-          <Label htmlFor="password">
+          {dynamics.enable_password ? (
+          <p>
+            <Label htmlFor="password">
             <FormattedMessage id="password" defaultMessage="Password" />
           </Label>
           <Input
@@ -193,13 +211,15 @@ export const JoinPage = injectIntl(({ intl }) => {
             id="password"
             data-test-id="password-input"
             name="password"
-            enabled={dynamics.enable_password}
+            disabled={!dynamics.enable_password}
             value={password}
-            title={formatMessage(messages.teamnameValidationConstraints)}
-            pattern="^[a-z0-9]([-a-z0-9])+[a-z0-9]$"
-            maxLength="16"
-            onChange={({ target }) => setTeamname(target.value)}
+            title={formatMessage(messages.passwordValidationConstraints)}
+            pattern="^[a-zA-Z0-9]([-a-z-A-Z0-9])+[a-zA-Z0-9]$"
+            maxLength="64"
+            onChange={({ target }) => setPassword(target.value)}
           />
+          </p>
+        ) : null}          
           <Button data-test-id="create-join-team-button" type="submit">
             <FormattedMessage id="create_or_join_team_label" defaultMessage="Create / Join Team" />
           </Button>
