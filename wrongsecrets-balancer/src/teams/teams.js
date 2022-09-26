@@ -116,7 +116,9 @@ async function validateHMAC(req, res, next) {
 async function validatePassword(req, res, next) {
   const { team } = req.params;
   const { password } = req.body;
-  logger.info(`checking password for team ${team}, submitted: ${password}, needed: ${accessPassword}`)
+  logger.info(
+    `checking password for team ${team}, submitted: ${password}, needed: ${accessPassword}`
+  );
   try {
     if (!accessPassword || accessPassword.length === 0) {
       next();

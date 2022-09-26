@@ -55,7 +55,7 @@ const scoreBoard = require('./score-board/score-board');
 app.get('/balancer/dynamics', (req, res) => {
   const accessPassword = process.env['REACT_APP_ACCESS_PASSWORD'];
   logger.info(`password: ${accessPassword}`);
-  var usePassword = false;  
+  var usePassword = false;
   if (!accessPassword || accessPassword.length === 0) {
     //nothign for now
   } else {
