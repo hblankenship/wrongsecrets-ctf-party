@@ -11,8 +11,8 @@ echo "NOTE2: please replace balancer.cookie.cookieParserSecret witha value you f
 
 echo "Usage: ./build-an-deploy-aws.sh "
 
-source ./scripts/check-available-commands.sh
-checkCommandsAvailable helm aws kubectl eksctl
+source ./../scripts/check-available-commands.sh
+checkCommandsAvailable helm aws kubectl eksctl sed
 
 if test -n "${AWS_REGION-}"; then
   echo "AWS_REGION is set to <$AWS_REGION>"
@@ -49,7 +49,7 @@ echo "Installing policies and service accounts"
 
 aws iam create-policy \
     --policy-name AmazonEKSClusterAutoscalerPolicy \
-    --policy-document file://aws/cluster-autoscaler-policy.json
+    --policy-document file://cluster-autoscaler-policy.json
 
 echo "Installing iamserviceaccount"
 
@@ -64,10 +64,10 @@ eksctl create iamserviceaccount \
 
 echo "Deploying the k8s autoscaler for eks through kubectl"
 
-curl -o aws/cluster-autoscaler-autodiscover.yaml https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
-sed -i -e "s|<YOUR CLUSTER NAME>|$CLUSTERNAME|g" aws/cluster-autoscaler-autodiscover.yaml
+curl -o cluster-autoscaler-autodiscover.yaml https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+sed -i -e "s|<YOUR CLUSTER NAME>|$CLUSTERNAME|g" cluster-autoscaler-autodiscover.yaml
 
-kubectl apply -f aws/cluster-autoscaler-autodiscover.yaml
+kubectl apply -f cluster-autoscaler-autodiscover.yaml
 
 echo "annotating service account for cluster-autoscaler"
 kubectl annotate serviceaccount cluster-autoscaler \
