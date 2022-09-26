@@ -121,9 +121,9 @@ module "eks" {
   }
 
   tags = {
-    Environment = "test"
-    Application = "wrongsecrets"
-    k8s.io/cluster-autoscaler/wrongsecrets-exercise-cluster = "owned"
-    k8s.io/cluster-autoscaler/enabled = true
+    Environment                                               = "test"
+    Application                                               = "wrongsecrets"
+    "k8s.io/cluster-autoscaler/wrongsecrets-exercise-cluster" = "owned"
+    "k8s.io/cluster-autoscaler/enabled"                       = true
   }
 }
