@@ -9,12 +9,13 @@ checkCommandsAvailable kubectl jq awk
 IFS=$'
 '
 USERS=($(awk -F , '{print $3}' users.csv))
-TEAMS=($(awk -F , '{print $3}' users.csv))
+TEAMS=($(awk -F , '{print $3}' teams.csv))
 unset IFS
 for NAMESPACE in `kubectl get ns | grep t- |  awk '{print $1;}'`
 do
 echo "found $NAMESPACE"
-NO_TDASH_NAMESPACE=${NAMESPACE:2}
+CUT_NAMESPACE==${NAMESPACE:2}
+NO_TDASH_NAMESPACE=`echo $CUT_NAMESPACE | awk '{print tolower($0)}'`
 echo "checking list for $NO_TDASH_NAMESPACE"
 if [[ " ${USERS[*]} " =~ " ${NO_TDASH_NAMESPACE} " ]]; then
     echo "FOUND $NO_TDASH_NAMESPACE in users"
