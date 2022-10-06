@@ -15,7 +15,12 @@ const k8sCoreApi = kc.makeApiClient(CoreV1Api);
 const k8sCustomAPI = kc.makeApiClient(CustomObjectsApi);
 const k8sRBACAPI = kc.makeApiClient(RbacAuthorizationV1Api);
 const k8sNetworkingApi = kc.makeApiClient(NetworkingV1Api);
-const awsAccountEnv = process.env.IRSA_ROLE || 'youdidnotprovideanirsarole,goodluck';
+const awsAccountEnv = process.env.IRSA_ROLE;
+const secretsmanagerSecretName1 = process.env.SECRETS_MANAGER_SECRET_ID_1;
+const secretsmanagerSecretName2 = process.env.SECRETS_MANAGER_SECRET_ID_2;
+const wrongSecretsContainterTag = process.env.WRONGSECRETS_TAG;
+const wrongSecretsDekstopTag = process.env.WRONGSECRETS_DESKTOP_TAG;
+const heroku_wrongsecret_ctf_url = process.env.REACT_APP_HEROKU_WRONGSECRETS_URL;
 
 const { get } = require('./config');
 const { logger } = require('./logger');
@@ -56,7 +61,7 @@ const createConfigmapForTeam = async (team) => {
   const configmap = {
     apiVersion: 'v1',
     data: {
-      'funny.entry': 'thisIsK8SConfigMap',
+      'funny.entry': 'helloCTF-configmap',
     },
     kind: 'ConfigMap',
     metadata: {
@@ -75,7 +80,7 @@ const createSecretsfileForTeam = async (team) => {
   const secret = {
     apiVersion: 'v1',
     data: {
-      funnier: 'dGhpcyBpcyBhcGFzc3dvcmQ=',
+      funnier: 'RmxhZzogYXJlIHlvdSBoYXZpbmcgZnVuIHlldD8=',
     },
     kind: 'Secret',
     type: 'Opaque',
@@ -135,8 +140,7 @@ const createK8sDeploymentForTeam = async ({ team, passcodeHash }) => {
           containers: [
             {
               name: 'wrongsecrets',
-              //TODO REPLACE HARDCODED BELOW WITH PROPPER GETS: image: `${get('wrongsecrets.image')}:${get('wrongsecrets.tag')}`,
-              image: 'jeroenwillemsen/wrongsecrets:1.5.4RC6-no-vault',
+              image: `jeroenwillemsen/wrongsecrets:${wrongSecretsContainterTag}`,
               imagePullPolicy: get('wrongsecrets.imagePullPolicy'),
               // resources: get('wrongsecrets.resources'),
               securityContext: {
@@ -160,6 +164,10 @@ const createK8sDeploymentForTeam = async ({ team, passcodeHash }) => {
                 {
                   name: 'K8S_ENV',
                   value: 'k8s',
+                },
+                {
+                  name: 'CTF_SERVER_ADDRESS',
+                  value: `${heroku_wrongsecret_ctf_url}`,
                 },
                 {
                   name: 'challenge_acht_ctf_to_provide_to_host_value',
@@ -214,10 +222,12 @@ const createK8sDeploymentForTeam = async ({ team, passcodeHash }) => {
                 requests: {
                   memory: '512Mi',
                   cpu: '200m',
+                  'ephemeral-storage': '1Gi',
                 },
                 limits: {
                   memory: '512Mi',
-                  cpu: '200m',
+                  cpu: '500m',
+                  'ephemeral-storage': '2Gi',
                 },
               },
 
@@ -229,7 +239,7 @@ const createK8sDeploymentForTeam = async ({ team, passcodeHash }) => {
                 // },
                 {
                   mountPath: '/tmp',
-                  name: 'cache-volume',
+                  name: 'ephemeral',
                 },
                 // ...get('wrongsecrets.volumeMounts', []),
               ],
@@ -243,7 +253,7 @@ const createK8sDeploymentForTeam = async ({ team, passcodeHash }) => {
             //   },
             // },
             {
-              name: 'cache-volume',
+              name: 'ephemeral',
               emptyDir: {},
             },
             // ...get('wrongsecrets.volumes', []),
@@ -278,8 +288,7 @@ const createAWSSecretsProviderForTeam = async (team) => {
     spec: {
       provider: 'aws',
       parameters: {
-        objects:
-          '- objectName: "wrongsecret"\n  objectType: "secretsmanager"\n- objectName: "wrongsecret-2"\n  objectType: "secretsmanager"\n',
+        objects: `- objectName: "${secretsmanagerSecretName1}"\n  objectType: "secretsmanager"\n- objectName: "${secretsmanagerSecretName2}"\n  objectType: "secretsmanager"\n`,
       },
     },
   };
@@ -379,15 +388,14 @@ const createAWSDeploymentForTeam = async ({ team, passcodeHash }) => {
               },
             },
             {
-              name: 'cache-volume',
+              name: 'ephemeral',
               emptyDir: {},
             },
           ],
           containers: [
             {
               name: 'wrongsecrets',
-              //TODO REPLACE HARDCODED BELOW WITH PROPPER GETS: image: `${get('wrongsecrets.image')}:${get('wrongsecrets.tag')}`,
-              image: 'jeroenwillemsen/wrongsecrets:1.5.4RC6-no-vault',
+              image: `jeroenwillemsen/wrongsecrets:${wrongSecretsContainterTag}`,
               imagePullPolicy: get('wrongsecrets.imagePullPolicy'),
               // resources: get('wrongsecrets.resources'),
               securityContext: {
@@ -411,6 +419,22 @@ const createAWSDeploymentForTeam = async ({ team, passcodeHash }) => {
                 {
                   name: 'K8S_ENV',
                   value: 'aws',
+                },
+                {
+                  name: 'APP_VERSION',
+                  value: `${wrongSecretsContainterTag}-ctf`,
+                },
+                {
+                  name: 'CTF_SERVER_ADDRESS',
+                  value: `${heroku_wrongsecret_ctf_url}`,
+                },
+                {
+                  name: 'FILENAME_CHALLENGE9',
+                  value: `${secretsmanagerSecretName1}`,
+                },
+                {
+                  name: 'FILENAME_CHALLENGE10',
+                  value: `${secretsmanagerSecretName2}`,
                 },
                 {
                   name: 'challenge_acht_ctf_to_provide_to_host_value',
@@ -465,10 +489,12 @@ const createAWSDeploymentForTeam = async ({ team, passcodeHash }) => {
                 requests: {
                   memory: '512Mi',
                   cpu: '200m',
+                  'ephemeral-storage': '1Gi',
                 },
                 limits: {
                   memory: '512Mi',
-                  cpu: '1000m',
+                  cpu: '500m',
+                  'ephemeral-storage': '2Gi',
                 },
               },
               volumeMounts: [
@@ -479,7 +505,7 @@ const createAWSDeploymentForTeam = async ({ team, passcodeHash }) => {
                 // },
                 {
                   mountPath: '/tmp',
-                  name: 'cache-volume',
+                  name: 'ephemeral',
                 },
                 {
                   name: 'secrets-store-inline',
@@ -510,7 +536,66 @@ module.exports.createAWSDeploymentForTeam = createAWSDeploymentForTeam;
 
 //END AWS
 
+const getKubernetesEndpointToWhitelist = async () => {
+  const {
+    response: {
+      body: { subsets },
+    },
+  } = await k8sCoreApi.readNamespacedEndpoints('kubernetes', 'default');
+  logger.info(JSON.stringify(subsets));
+  return subsets.flatMap((subset) => subset.addresses.map((address) => address.ip));
+};
+
 const createNSPsforTeam = async (team) => {
+  const ipaddresses = await getKubernetesEndpointToWhitelist();
+
+  const nspAllowkubectl = {
+    apiVersion: 'networking.k8s.io/v1',
+    kind: 'NetworkPolicy',
+    metadata: {
+      name: 'access-kubectl-from-virtualdeskop',
+      namespace: `t-${team}`,
+    },
+    spec: {
+      podSelector: {
+        matchLabels: {
+          app: 'virtualdesktop',
+        },
+      },
+      egress: [
+        {
+          to: ipaddresses.map((address) => ({
+            ipBlock: {
+              cidr: `${address}/32`,
+            },
+          })),
+          ports: [
+            {
+              port: 443,
+              protocol: 'TCP',
+            },
+            {
+              port: 8443,
+              protocol: 'TCP',
+            },
+            {
+              port: 80,
+              protocol: 'TCP',
+            },
+            {
+              port: 10250,
+              protocol: 'TCP',
+            },
+            {
+              port: 53,
+              protocol: 'UDP',
+            },
+          ],
+        },
+      ],
+    },
+  };
+
   const nspDefaultDeny = {
     apiVersion: 'networking.k8s.io/v1',
     kind: 'NetworkPolicy',
@@ -522,6 +607,58 @@ const createNSPsforTeam = async (team) => {
       podSelector: {},
       policyTypes: ['Ingress', 'Egress'],
     },
+  };
+
+  const nsAllowBalancer = {
+    kind: 'NetworkPolicy',
+    apiVersion: 'networking.k8s.io/v1',
+    metadata: {
+      name: 'balancer-access-to-namespace',
+      namespace: `t-${team}`,
+    },
+    spec: {
+      podSelector: {},
+      ingress: [
+        {
+          from: [
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': 'default',
+                },
+              },
+            },
+            {
+              podSelector: {
+                matchLabels: {
+                  'app.kubernetes.io/name': 'wrongsecrets-ctf-party',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    egress: [
+      {
+        to: [
+          {
+            namespaceSelector: {
+              matchLabels: {
+                'kubernetes.io/metadata.name': 'default',
+              },
+            },
+          },
+          {
+            podSelector: {
+              matchLabels: {
+                'app.kubernetes.io/name': 'wrongsecrets-ctf-party',
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 
   const nsAllowWrongSecretstoVirtualDesktop = {
@@ -717,26 +854,117 @@ const createNSPsforTeam = async (team) => {
       ],
     },
   };
+
+  const broaderallow = {
+    apiVersion: 'networking.k8s.io/v1',
+    kind: 'NetworkPolicy',
+    metadata: {
+      name: 'kubectl-policy',
+      namespace: `t-${team}`,
+    },
+    spec: {
+      podSelector: {
+        matchLabels: {
+          app: 'virtualdesktop',
+        },
+      },
+      policyTypes: ['Ingress', 'Egress'],
+      ingress: [
+        {
+          from: [
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': 'kube-system',
+                },
+              },
+              podSelector: {},
+            },
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': 'default',
+                },
+              },
+              podSelector: {},
+            },
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': `t-${team}`,
+                },
+              },
+              podSelector: {},
+            },
+          ],
+        },
+      ],
+      egress: [
+        {
+          to: [
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': 'kube-system',
+                },
+              },
+              podSelector: {},
+            },
+            {
+              namespaceSelector: {
+                matchLabels: {
+                  'kubernetes.io/metadata.name': `t-${team}`,
+                },
+              },
+              podSelector: {},
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  logger.info(`applying nspAllowkubectl for ${team}`);
+  await k8sNetworkingApi
+    .createNamespacedNetworkPolicy(`t-${team}`, nspAllowkubectl)
+    .catch((error) => {
+      throw new Error(JSON.stringify(error));
+    });
+  logger.info(`applying nspDefaultDeny for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nspDefaultDeny)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
-  await k8sNetworkingApi
-    .createNamespacedNetworkPolicy(`t-${team}`, nsAllowWrongSecretstoVirtualDesktop)
-    .catch((error) => {
-      throw new Error(JSON.stringify(error));
-    });
-  await k8sNetworkingApi
-    .createNamespacedNetworkPolicy(`t-${team}`, nsAllowVirtualDesktoptoWrongSecrets)
-    .catch((error) => {
-      throw new Error(JSON.stringify(error));
-    });
+  logger.info(`applying nsAllowOnlyDNS for ${team}`);
   await k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowOnlyDNS)
     .catch((error) => {
       throw new Error(JSON.stringify(error));
     });
+  logger.info(`applying nsAllowBalancer for ${team}`);
+  await k8sNetworkingApi
+    .createNamespacedNetworkPolicy(`t-${team}`, nsAllowBalancer)
+    .catch((error) => {
+      throw new Error(JSON.stringify(error));
+    });
+  logger.info(`applying nsAllowWrongSecretstoVirtualDesktop for ${team}`);
+  await k8sNetworkingApi
+    .createNamespacedNetworkPolicy(`t-${team}`, nsAllowWrongSecretstoVirtualDesktop)
+    .catch((error) => {
+      throw new Error(JSON.stringify(error));
+    });
+  logger.info(`applying nsAllowVirtualDesktoptoWrongSecrets for ${team}`);
+  await k8sNetworkingApi
+    .createNamespacedNetworkPolicy(`t-${team}`, nsAllowVirtualDesktoptoWrongSecrets)
+    .catch((error) => {
+      throw new Error(JSON.stringify(error));
+    });
+  logger.info(`applying broaderallow for ${team}`);
+  await k8sNetworkingApi.createNamespacedNetworkPolicy(`t-${team}`, broaderallow).catch((error) => {
+    throw new Error(JSON.stringify(error));
+  });
+  logger.info(`applying nsAllowToDoKubeCTLFromWebTop for ${team}`);
   return k8sNetworkingApi
     .createNamespacedNetworkPolicy(`t-${team}`, nsAllowToDoKubeCTLFromWebTop)
     .catch((error) => {
@@ -859,19 +1087,25 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
         },
         spec: {
           serviceAccountName: 'webtop-sa',
-          //automountServiceAccountToken: false,
-          // securityContext: {
-          //   runAsUser: 911,
-          //   runAsGroup: 911,
-          //   fsGroup: 911,
-          // },
           containers: [
             {
               name: 'virtualdesktop',
               //TODO REPLACE HARDCODED BELOW WITH PROPPER GETS: image: `${get('wrongsecrets.image')}:${get('wrongsecrets.tag')}`,
-              image: 'jeroenwillemsen/wrongsecrets-desktop:1.5.4RC8',
+              image: `jeroenwillemsen/wrongsecrets-desktop-k8s:${wrongSecretsDekstopTag}`,
               imagePullPolicy: get('virtualdesktop.imagePullPolicy'),
-              resources: get('virtualdesktop.resources'),
+              resources: {
+                requests: {
+                  memory: '2.5G',
+                  cpu: '800m',
+                  'ephemeral-storage': '4Gi',
+                },
+                limits: {
+                  memory: '3.5G',
+                  cpu: '2000m',
+                  'ephemeral-storage': '8Gi',
+                },
+              },
+              // resources: get('virtualdesktop.resources'),
               securityContext: {
                 // allowPrivilegeEscalation: false,
                 // readOnlyRootFilesystem: true,
@@ -881,6 +1115,12 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
               ports: [
                 {
                   containerPort: 3000,
+                },
+              ],
+              volumeMounts: [
+                {
+                  mountPath: '/config',
+                  name: 'config-fs',
                 },
               ],
               readinessProbe: {
@@ -900,10 +1140,17 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
                 initialDelaySeconds: 30,
                 periodSeconds: 15,
               },
-              volumeMounts: [{ mountPath: '/tmp', name: 'cache-volume' }],
             },
           ],
-          volumes: [{ name: 'cache-volume', emptyDir: {} }],
+          volumes: [
+            {
+              emptyDir: {
+                medium: 'Memory',
+                sizeLimit: '128Mi',
+              },
+              name: 'config-fs',
+            },
+          ],
           tolerations: get('virtualdesktop.tolerations'),
           affinity: get('virtualdesktop.affinity'),
           runtimeClassName: get('virtualdesktop.runtimeClassName')
@@ -1119,9 +1366,9 @@ const changePasscodeHashForTeam = async (teamname, passcodeHash) => {
     },
   };
 
-  await k8sAppsApi.patchNamespacedDeployment(
+  return k8sAppsApi.patchNamespacedDeployment(
     `${teamname}-wrongsecrets`,
-    `t-${teamname}`,
+    `${teamname}`,
     deploymentPatch,
     undefined,
     undefined,

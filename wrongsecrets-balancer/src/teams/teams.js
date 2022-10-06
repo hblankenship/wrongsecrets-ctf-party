@@ -1,14 +1,16 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const cryptoRandomString = require('crypto-random-string');
 
 const Joi = require('@hapi/joi');
 const expressJoiValidation = require('express-joi-validation');
 const promClient = require('prom-client');
+const accessPassword = process.env.REACT_APP_ACCESS_PASSWORD;
+const hmac_key = process.env.REACT_APP_CREATE_TEAM_HMAC_KEY || 'hardcodedkey';
 
 const validator = expressJoiValidation.createValidator();
 const k8sEnv = process.env.K8S_ENV || 'k8s';
-
 const router = express.Router();
 
 const {
@@ -82,6 +84,54 @@ async function interceptAdminLogin(req, res, next) {
   }
 
   return next();
+}
+
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
+async function validateHMAC(req, res, next) {
+  try {
+    const { team } = req.params;
+    const { hmacvalue } = req.body;
+    const validationValue = crypto
+      .createHmac('sha256', hmac_key)
+      .update(`${team}`, 'utf-8')
+      .digest('hex');
+    if (validationValue === hmacvalue) {
+      return next();
+    }
+    res.status(403).send({ message: 'Invalid validation, please stop doing this!' });
+  } catch (error) {
+    res.status(500).send({ message: 'Invalid validation, please stop doing this!' });
+  }
+}
+
+/**
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
+async function validatePassword(req, res, next) {
+  const { team } = req.params;
+  const { password } = req.body;
+  logger.info(
+    `checking password for team ${team}, submitted: ${password}, needed: ${accessPassword}`
+  );
+  try {
+    if (!accessPassword || accessPassword.length === 0) {
+      next();
+    } else {
+      if (password === accessPassword) {
+        next();
+      } else {
+        res.status(403).send({ message: 'Go home pizzaboy!' });
+      }
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Go home pizzaboy!' });
+  }
 }
 
 /**
@@ -448,7 +498,9 @@ async function resetPasscode(req, res) {
       return res.status(404).send({ message: 'No instance to reset the passcode for.' });
     }
     logger.error(
-      `Encountered unknown error while resetting passcode hash for deployment: ${error.message}`
+      `Encountered unknown error while resetting passcode hash for deployment: ${JSON.stringify(
+        error
+      )}`
     );
     // logger.error(error.message);
     return res.status(500).send({ message: 'Unknown error while resetting passcode.' });
@@ -506,7 +558,9 @@ const paramsSchema = Joi.object({
     .regex(/^[a-z0-9]([-a-z0-9])+[a-z0-9]$/),
 });
 const bodySchema = Joi.object({
+  hmacvalue: Joi.string().hex().length(64),
   passcode: Joi.string().alphanum().uppercase().length(8),
+  password: Joi.string().alphanum().max(64),
 });
 
 router.post('/logout', logout);
@@ -518,6 +572,8 @@ router.post(
   interceptAdminLogin,
   joinIfTeamAlreadyExists,
   checkIfMaxJuiceShopInstancesIsReached,
+  validatePassword,
+  validateHMAC,
   createTeam
 );
 
