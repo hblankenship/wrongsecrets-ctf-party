@@ -116,22 +116,28 @@ helm upgrade --install mj ../helm/wrongsecrets-ctf-party \
   --set="imagePullPolicy=Always" \
   --set="balancer.env.K8S_ENV=aws" \
   --set="balancer.env.IRSA_ROLE=arn:aws:iam::${ACCOUNT_ID}:role/wrongsecrets-secret-manager" \
-  --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${DEFAULT_PASSWORD}" \
+  --set="balancer.env.REACT_APP_ACCESS_PASSWORD=benelux2022" \
+  --set="balancer.env.REACT_APP_CTFD_URL=https://ctfd.owaspbenelux.eu" \
+  --set="balancer.env.REACT_APP_S3_BUCKET_URL=terraform-20221107072744117300000001" \
+  --set="balancer.env.REACT_APP_HEROKU_WRONGSECRETS_URL=https://ctfd.owaspbenelux.eu" \
+  --set="balancer.cookie.secure=true"\
+  --set="balancer.env.REACT_APP_MOVING_GIF_LOGO=https://i.imgur.com/XGaAv0j.png" \
   --set="balancer.cookie.cookieParserSecret=thisisanewrandomvaluesowecanworkatit" \
   --set="balancer.repository=jeroenwillemsen/wrongsecrets-balancer" \
-  --set="balancer.tag=1.0aws"\
-  --set="balancer.replicas=4" \
+  --set="balancer.tag=1.2aws"\
+  --set="balancer.replicas=1" \
   --set="wrongsecretsCleanup.repository=jeroenwillemsen/wrongsecrets-ctf-cleaner" \
   --set="wrongsecretsCleanup.tag=0.2" \
   --set="wrongsecrets.ctfKey=test"
-
+  
 # Install CTFd
 
 export HELM_EXPERIMENTAL_OCI=1
 kubectl create namespace ctfd
-helm -n ctfd install ctfd oci://ghcr.io/bman46/ctfd/ctfd \
+helm -n ctfd upgrade --install ctfd oci://ghcr.io/bman46/ctfd/ctfd \
   --set="redis.auth.password=${$(openssl rand -base64 24)}" \
   --set="mariadb.auth.rootPassword=${$(openssl rand -base64 24)}" \
   --set="mariadb.auth.password=${$(openssl rand -base64 24)}" \
   --set="mariadb.auth.replicationPassword=${$(openssl rand -base64 24)}" \
-  --set="env.open.SECRET_KEY=test"
+  --set="env.open.SECRET_KEY=test" \
+  --set="image.tag=3.5.0"

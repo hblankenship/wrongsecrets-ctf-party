@@ -118,4 +118,14 @@ data "aws_iam_policy_document" "user_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    sid    = "canassume"
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [aws_iam_role.irsa_role.arn]
+  }
 }

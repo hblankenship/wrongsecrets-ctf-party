@@ -1,11 +1,11 @@
 terraform {
   # Set your region and bucket name (output from shared state) in the placeholder below
   # Then uncomment and apply!
-  # backend "s3" {
-  #   region = "eu-west-1" # Change if desired
-  #   bucket = ""
-  #   key    = "wrongsecrets/terraform.tfstate"
-  # }
+  backend "s3" {
+    region = "eu-west-1" # Change if desired
+    bucket = "terraform-20221107072744117300000001"
+    key    = "wrongsecrets/terraform.tfstate"
+  }
 }
 
 locals {
@@ -106,7 +106,7 @@ module "eks" {
       max_size               = 50
       desired_size           = 1
 
-      capacity_type = "SPOT"
+      capacity_type = "ON_DEMAND"
 
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"

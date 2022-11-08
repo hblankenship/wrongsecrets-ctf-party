@@ -21,3 +21,9 @@ variable "extra_allowed_ip_ranges" {
   type        = list(string)
   default     = []
 }
+
+variable "state_bucket_arn" {
+  description = "The state bucket arn"
+  type        = string
+  default     = ""
+}
