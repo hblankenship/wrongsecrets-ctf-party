@@ -16,6 +16,8 @@ Note that we:
 - Do not support any progress watchdog as you will have access to it, we therefore disabled it.
 - It can cleanup old & unused namespaces automatically.
 
+Copyright (c) 2020-2023 Jeroen Willemsen and WrongSecrets contributors.
+
 ## Special thanks
 
 Special thanks to [@commjoen](https://github.com/commjoen), [@madhuakula](https://github.com/madhuakula), [@bendehaan](https://github.com/bendehaan) , and [@mikewoudenberg](https://github.com/mikewoudenberg) for making this port a reality!
