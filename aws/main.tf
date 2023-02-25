@@ -141,7 +141,7 @@ module "eks" {
 # Cluster Autoscaler IRSA
 module "cluster_autoscaler_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.9.0"
+  version = "~> 5.11.2"
 
 
   role_name                        = "wrongsecrets-cluster-autoscaler"
@@ -158,7 +158,7 @@ module "cluster_autoscaler_irsa_role" {
 
 module "ebs_csi_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.9.0"
+  version = "~> 5.11.2"
 
   role_name             = "wrongsecrets-ebs-csi"
   attach_ebs_csi_policy = true
@@ -173,7 +173,7 @@ module "ebs_csi_irsa_role" {
 
 module "load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.9.0"
+  version = "~> 5.11.2"
 
   role_name                              = "wrongsecrets-load-balancer-controller"
   attach_load_balancer_controller_policy = true
