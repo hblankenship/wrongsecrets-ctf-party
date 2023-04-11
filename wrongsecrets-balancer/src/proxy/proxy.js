@@ -128,7 +128,13 @@ function proxyTrafficToJuiceShop(req, res) {
     req.path === '/files/socket.io/socket.io.js' ||
     req.path === '/js/vendor/jquery.min.js' ||
     req.path === '/files/socket.io/' ||
-    req.path === '/files/socket.io/socket.io.js.map'
+    req.path === '/files/socket.io/socket.io.js.map' ||
+    req.path === '/public/css/filebrowser.css' ||
+    req.path === '/public/js/filebrowser.js' ||
+    req.path === '/public/js/jquery.min.js' ||
+    req.path === '/vnc/vendor/interact.min.js.map' ||
+    req.path.includes('vnc') ||
+    req.path.includes('audio/socket.io')
   ) {
     target = {
       target: `http://${teamname}-virtualdesktop.${teamname}.svc:8080`,
@@ -140,11 +146,18 @@ function proxyTrafficToJuiceShop(req, res) {
       ws: true,
     };
   }
-  logger.info(`we got ${teamname} requesting ${target.target}`);
+  logger.info(`we got ${teamname} requesting ${target.target} for ${req.path}`);
 
-  if (req.path === '/guaclite') {
+  if (
+    req.path === '/guaclite' ||
+    req.path === '/websockify' ||
+    req.path === '/audio/socket.io/' ||
+    req.path === '/files/socket.io/'
+  ) {
     let server = res.socket.server;
-    logger.info('putting ws through for /quaclite');
+    logger.info(
+      'putting ws through for /quaclite or /websockify or /audio/socket.io/ or /files/socket.io/'
+    );
     server.on('upgrade', function (req, socket, head) {
       cookieParser(get('cookieParser.secret'))(req, null, () => {});
 

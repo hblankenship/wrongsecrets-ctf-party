@@ -200,7 +200,7 @@ virtualdesktop:
   maxInstances: 500
   # -- Juice Shop Image to use
   image: jeroenwillemsen/wrongsecrets-desktop-k8s
-  tag: 1.6.0
+  tag: up3
   repository: commjoenie/wrongSecrets
   resources:
     request:
