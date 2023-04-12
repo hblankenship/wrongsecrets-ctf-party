@@ -1107,6 +1107,10 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
                   value: '1000',
                 },
                 {
+                  name: 'TITLE',
+                  value: 'WrongSecrets CTF Desktop',
+                },
+                {
                   name: 'PGID',
                   value: '1000',
                 },
@@ -1191,7 +1195,7 @@ const createServiceForTeam = async (teamname) =>
         },
         ports: [
           {
-            port: 8080,
+            port: 3000
           },
         ],
       },
@@ -1221,7 +1225,7 @@ const createDesktopServiceForTeam = async (teamname) =>
         },
         ports: [
           {
-            port: 8080,
+            port: 3000,
             targetPort: 3000,
           },
         ],

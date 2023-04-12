@@ -132,12 +132,14 @@ function proxyTrafficToJuiceShop(req, res) {
     req.path === '/public/css/filebrowser.css' ||
     req.path === '/public/js/filebrowser.js' ||
     req.path === '/public/js/jquery.min.js' ||
+    req.path === '/public/css/kclient.css' ||
     req.path === '/vnc/vendor/interact.min.js.map' ||
-    req.path.includes('vnc') ||
-    req.path.includes('audio/socket.io')
+    req.path === '/audio/socket.io/socket.io.js' ||
+    req.path === '/files/socket.io/socket.io.js' ||
+    req.path.includes('vnc')
   ) {
     target = {
-      target: `http://${teamname}-virtualdesktop.${teamname}.svc:8080`,
+      target: `http://${teamname}-virtualdesktop.${teamname}.svc:3000`,
       ws: true,
     };
   } else {
@@ -156,7 +158,7 @@ function proxyTrafficToJuiceShop(req, res) {
   ) {
     let server = res.socket.server;
     logger.info(
-      'putting ws through for /quaclite or /websockify or /audio/socket.io/ or /files/socket.io/'
+      `putting ws through for ${req.path}`
     );
     server.on('upgrade', function (req, socket, head) {
       cookieParser(get('cookieParser.secret'))(req, null, () => {});
@@ -172,7 +174,7 @@ function proxyTrafficToJuiceShop(req, res) {
       }
       logger.info(`proxying upgrade request for: ${req.url} with team ${upgradeTeamname}`);
       proxy.ws(req, socket, head, {
-        target: `ws://${upgradeTeamname}-virtualdesktop.${upgradeTeamname}.svc:8080`,
+        target: `ws://${upgradeTeamname}-virtualdesktop.${upgradeTeamname}.svc:3000`,
         ws: true,
       });
     });
@@ -183,9 +185,9 @@ function proxyTrafficToJuiceShop(req, res) {
         logger.info(`Got malformed teamname: ${teamname}s`);
         return res.redirect('/balancer/');
       }
-      logger.info(`proxying upgrade request for: ${req.url} with team ${connectTeamname}`);
+      logger.info(`proxying connect request for: ${req.url} with team ${connectTeamname}`);
       proxy.ws(req, socket, head, {
-        target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:8080`,
+        target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:3000`,
         ws: true,
       });
     });
