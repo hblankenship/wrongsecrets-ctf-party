@@ -157,9 +157,7 @@ function proxyTrafficToJuiceShop(req, res) {
     req.path === '/files/socket.io/'
   ) {
     let server = res.socket.server;
-    logger.info(
-      `putting ws through for ${req.path}`
-    );
+    logger.info(`putting ws through for ${req.path}`);
     server.on('upgrade', function (req, socket, head) {
       cookieParser(get('cookieParser.secret'))(req, null, () => {});
 
