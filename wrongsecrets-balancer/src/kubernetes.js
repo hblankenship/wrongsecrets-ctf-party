@@ -1302,19 +1302,30 @@ const deleteDesktopPodForTeam = async (team) => {
 };
 module.exports.deleteDesktopPodForTeam = deleteDesktopPodForTeam;
 
-const getJuiceShopInstanceForTeamname = (teamname) =>
-  k8sAppsApi
+const getJuiceShopInstanceForTeamname = (teamname) => {
+  logger.info(`checking readiness for ${teamname}`);
+  return k8sAppsApi
     .readNamespacedDeployment(`t-${teamname}-wrongsecrets`, `t-${teamname}`)
     .then((res) => {
-      return {
-        readyReplicas: res.body.status.readyReplicas,
-        availableReplicas: res.body.status.availableReplicas,
-        passcodeHash: res.body.metadata.annotations['wrongsecrets-ctf-party/passcode'],
-      };
+      if (
+        Object.prototype.hasOwnProperty.call(res.body, 'metadata') &&
+        Object.prototype.hasOwnProperty.call(res.body.metadata, 'annotations')
+      ) {
+        return {
+          readyReplicas: res.body.status.readyReplicas,
+          availableReplicas: res.body.status.availableReplicas,
+          passcodeHash: res.body.metadata.annotations['wrongsecrets-ctf-party/passcode'],
+        };
+      }
+      return;
     })
     .catch((error) => {
+      if (error.response.body.message.includes('No such container')) {
+        return;
+      }
       throw new Error(error.response.body.message);
     });
+};
 module.exports.getJuiceShopInstanceForTeamname = getJuiceShopInstanceForTeamname;
 
 const updateLastRequestTimestampForTeam = (teamname) => {
