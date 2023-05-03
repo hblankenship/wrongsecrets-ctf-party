@@ -124,7 +124,7 @@ function proxyTrafficToJuiceShop(req, res) {
     (req.headers['Referer'] !== undefined &&
       req.headers['Referer'].includes(currentReferrerForDesktop)) ||
       req.path === '/css/filebrowser.css' ||
-      req.path === '/audio/socket.io/socket.io.js' ||  
+      req.path === '/audio/socket.io/socket.io.js' ||
       req.path === '/files/socket.io/socket.io.js' ||
       req.path === '/files/socket.io/socket.io.js.map' ||
       req.path === '/js/filebrowser.js' ||
