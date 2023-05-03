@@ -139,7 +139,7 @@ function proxyTrafficToJuiceShop(req, res) {
     req.path.includes('vnc')
   ) {
     target = {
-      target: `http://${teamname}-virtualdesktop.${teamname}.svc:3000`,
+      target: `http://${teamname}-virtualdesktop.${teamname}.svc:8080`,
       ws: true,
     };
   } else {
@@ -172,7 +172,7 @@ function proxyTrafficToJuiceShop(req, res) {
       }
       logger.info(`proxying upgrade request for: ${req.url} with team ${upgradeTeamname}`);
       proxy.ws(req, socket, head, {
-        target: `ws://${upgradeTeamname}-virtualdesktop.${upgradeTeamname}.svc:3000`,
+        target: `ws://${upgradeTeamname}-virtualdesktop.${upgradeTeamname}.svc:8080`,
         ws: true,
       });
     });
@@ -185,7 +185,7 @@ function proxyTrafficToJuiceShop(req, res) {
       }
       logger.info(`proxying connect request for: ${req.url} with team ${connectTeamname}`);
       proxy.ws(req, socket, head, {
-        target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:3000`,
+        target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:8080`,
         ws: true,
       });
     });

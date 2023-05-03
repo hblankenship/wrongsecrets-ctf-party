@@ -1195,7 +1195,7 @@ const createServiceForTeam = async (teamname) =>
         },
         ports: [
           {
-            port: 3000,
+            port: 8080,
           },
         ],
       },
@@ -1225,7 +1225,7 @@ const createDesktopServiceForTeam = async (teamname) =>
         },
         ports: [
           {
-            port: 3000,
+            port: 8080,
             targetPort: 3000,
           },
         ],
