@@ -123,12 +123,25 @@ function proxyTrafficToJuiceShop(req, res) {
       req.headers['referer'].includes(currentReferrerForDesktop)) ||
     (req.headers['Referer'] !== undefined &&
       req.headers['Referer'].includes(currentReferrerForDesktop)) ||
-    req.path === '/js/filebrowser.js' ||
-    req.path === '/css/filebrowser.css' ||
-    req.path === '/files/socket.io/socket.io.js' ||
-    req.path === '/js/vendor/jquery.min.js' ||
-    req.path === '/files/socket.io/' ||
-    req.path === '/files/socket.io/socket.io.js.map'
+      req.path === '/css/filebrowser.css' ||
+      req.path === '/audio/socket.io/socket.io.js' ||
+      req.path === '/files/socket.io/socket.io.js' ||
+      req.path === '/files/socket.io/socket.io.js.map' ||
+      req.path === '/js/filebrowser.js' ||
+      req.path === '/js/vendor/jquery.min.js' ||
+      req.path === '/public/css/filebrowser.css' ||
+      req.path === '/public/css/files.svg' ||
+      req.path === '/public/css/kclient.css' ||
+      req.path === '/public/css/speaker.svg' ||
+      req.path === '/public/js/filebrowser.js' ||
+      req.path === '/public/js/jquery.min.js' ||
+      req.path === '/public/js/kclient.js' ||
+      req.path === '/public/js/pcm-player.js' ||
+      req.path === '/vnc/vendor/interact.min.js' ||
+      req.path === '/vnc/vendor/interact.min.js.map' ||
+      req.path === '/vnc/dist/runtime.bundle.js' ||
+      req.path === '/vnc/dist/vendors~main.bundle.js' ||
+      req.path.includes('vnc')
   ) {
     target = {
       target: `http://${teamname}-virtualdesktop.${teamname}.svc:8080`,
@@ -140,11 +153,16 @@ function proxyTrafficToJuiceShop(req, res) {
       ws: true,
     };
   }
-  logger.info(`we got ${teamname} requesting ${target.target}`);
+  logger.info(`we got ${teamname} requesting ${target.target} for ${req.path}`);
 
-  if (req.path === '/guaclite') {
+  if (
+    req.path === '/guaclite' ||
+    req.path === '/websockify' ||
+    !!req.query.EIO
+  ) {
     let server = res.socket.server;
-    logger.info('putting ws through for /quaclite');
+    logger.info(`putting ws through for ${req.path}`);
+    logger.info(`putting ws through for ${req.query}`);
     server.on('upgrade', function (req, socket, head) {
       cookieParser(get('cookieParser.secret'))(req, null, () => {});
 
@@ -170,7 +188,7 @@ function proxyTrafficToJuiceShop(req, res) {
         logger.info(`Got malformed teamname: ${teamname}s`);
         return res.redirect('/balancer/');
       }
-      logger.info(`proxying upgrade request for: ${req.url} with team ${connectTeamname}`);
+      logger.info(`proxying connect request for: ${req.url} with team ${connectTeamname}`);
       proxy.ws(req, socket, head, {
         target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:8080`,
         ws: true,

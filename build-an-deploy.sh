@@ -19,7 +19,7 @@ WEBTOP_TAG=$(cat helm/wrongsecrets-ctf-party/values.yaml| yq '.virtualdesktop.ta
 echo "Pulling in required images to actually run $WRONGSECRETS_IMAGE:$WRONGSECRETS_TAG & $WEBTOP_IMAGE:$WEBTOP_TAG."
 echo "If you see an authentication failure: pull them manually by the following 2 commands"
 echo "'docker pull $WRONGSECRETS_IMAGE:$WRONGSECRETS_TAG'"
-echo "'docker pull $WEBTOP_IMAGE:$WEBTOP_TAG'" &
+echo "'docker pull $WEBTOP_IMAGE:$WEBTOP_TAG'"
 docker pull $WRONGSECRETS_IMAGE:$WRONGSECRETS_TAG &
 docker pull $WEBTOP_IMAGE:$WEBTOP_TAG &
 docker build -t local/wrongsecrets-balancer:$version ./wrongsecrets-balancer &

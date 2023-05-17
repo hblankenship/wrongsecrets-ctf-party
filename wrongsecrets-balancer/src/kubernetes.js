@@ -1107,6 +1107,10 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
                   value: '1000',
                 },
                 {
+                  name: 'TITLE',
+                  value: 'WrongSecrets CTF Desktop',
+                },
+                {
                   name: 'PGID',
                   value: '1000',
                 },
