@@ -26,8 +26,8 @@ metadata:
     helm.sh/chart: wrongsecrets-ctf-party-0.1.0-alpha
 type: Opaque
 data:
-  cookieParserSecret: "ZmdDN3ZZdkhYbE9XbmRoT3c2Y0ttY0RK"
-  adminPassword: "RVpCMkFGWkk="
+  cookieParserSecret: "RlN2YWpQdlRsRHhLcTBGS0JGekxWZ2F4"
+  adminPassword: "UloxQVlTTEY="
   metricsBasicAuthUsername: "cHJvbWV0aGV1cy1zY3JhcGVy"
   metricsBasicAuthPassword: "RVJ6Q1Q0cHdCRHhmQ0tSR21mck1hOEtROHNYZjhHS3k="
 ---
@@ -231,7 +231,7 @@ spec:
     metadata:
       annotations:
         checksum/config: f3575d7162cebea5a4ee8a5d79c3bbaa9bcc52999b00d5c4a992c13227ee47d4
-        checksum/secret: 81aa6bd591fa658d435e09120e7c93ce0b289d62a779b6d95795d3cd71120b9f
+        checksum/secret: 35af980afb984cfccbedfb4e89b525a14a7bb962910f19ab33e51a24b18bf1c3
       labels:
         app: wrongsecrets-balancer
         app.kubernetes.io/name: wrongsecrets-ctf-party
@@ -352,27 +352,27 @@ spec:
         spec:
           serviceAccountName: 'wrongsecrets-cleaner'
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 3000
             fsGroup: 2000
+            runAsGroup: 3000
+            runAsUser: 1000
           containers:
             - image: 'jeroenwillemsen/wrongsecrets-ctf-cleaner:0.4'
               imagePullPolicy: "IfNotPresent"
               securityContext:
                 allowPrivilegeEscalation: false
-                readOnlyRootFilesystem: true
-                runAsNonRoot: true
                 capabilities:
                   drop:
-                    - ALL
+                  - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
                 seccompProfile:
                   type: RuntimeDefault
               name: 'cleanup-job'
               env:
-                - name: NAMESPACE
-                  value: "myns"
                 - name: MAX_INACTIVE_DURATION
-                  value: 2d
+                  value: "2d"
                 - name: SHOULD_DELETE
                   value: "false"
+                - name: NAMESPACE
+                  value: "myns"
           restartPolicy: Never
