@@ -1,0 +1,52 @@
+apiVersion: v1
+entries:
+  wrongsecrets-ctf-party:
+    - apiVersion: v2
+      appVersion: 1.0.1
+      created: "2023-07-20T12:40:43.523977782Z"
+      description:
+        Run Multi User "Capture the Flags" or Security Trainings with OWASP
+        Wrongsecrets
+      digest: 9e7b1e0c6a14e88a0ea1efda0f6cdf61439dfe4f93588283a2f2025d2164dcc1
+      home: https://github.com/
+      icon: https://github.com/OWASP/wrongsecrets/blob/master/icon.png?raw=true
+      keywords:
+        - security
+        - wrongsecrets
+        - owasp
+        - capture-the-flag
+        - ctf-platform
+        - hacking
+        - kubernetes
+      name: wrongsecrets-ctf-party
+      sources:
+        - https://github.com/OWASP/wrongsecrets-ctf-party
+      type: application
+      urls:
+        - https://github.com/osamamagdy/wrongsecrets-ctf-party/releases/download/wrongsecrets-ctf-party-1.0.1/wrongsecrets-ctf-party-1.0.1.tgz
+      version: 1.0.1
+    - apiVersion: v2
+      appVersion: 1.0.0
+      created: "2023-07-20T12:10:52.673465977Z"
+      description:
+        Run Multi User "Capture the Flags" or Security Trainings with OWASP
+        Wrongsecrets
+      digest: 76ff7bb3708ca4d9ef29e2209888fc66116b3dae62912ed524c9c1bc22052756
+      home: https://github.com/
+      icon: https://github.com/OWASP/wrongsecrets/blob/master/icon.png?raw=true
+      keywords:
+        - security
+        - wrongsecrets
+        - owasp
+        - capture-the-flag
+        - ctf-platform
+        - hacking
+        - kubernetes
+      name: wrongsecrets-ctf-party
+      sources:
+        - https://github.com/OWASP/wrongsecrets-ctf-party
+      type: application
+      urls:
+        - https://github.com/osamamagdy/wrongsecrets-ctf-party/releases/download/wrongsecrets-ctf-party-1.0.0/wrongsecrets-ctf-party-1.0.0.tgz
+      version: 1.0.0
+generated: "2023-07-20T12:40:43.524005184Z"
