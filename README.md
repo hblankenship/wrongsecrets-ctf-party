@@ -40,7 +40,7 @@ To uninstall the chart:
     helm delete my-wrongsecrets-ctf-party
 # wrongsecrets-ctf-party
 
-![Version: 1.6.9](https://img.shields.io/badge/Version-1.6.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.9](https://img.shields.io/badge/AppVersion-1.6.9-informational?style=flat-square)
+![Version: 1.6.10](https://img.shields.io/badge/Version-1.6.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.10](https://img.shields.io/badge/AppVersion-1.6.10-informational?style=flat-square)
 
 Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 
@@ -69,23 +69,28 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | balancer.cookie.cookieParserSecret | string | `nil` | Set this to a fixed random alpa-numeric string (recommended length 24 chars). If not set this get randomly generated with every helm upgrade, each rotation invalidates all active cookies / sessions requirering users to login again. |
 | balancer.cookie.name | string | `"balancer"` | Changes the cookies name used to identify teams. Note will automatically be prefixed with "__Secure-" when balancer.cookie.secure is set to `true` |
 | balancer.cookie.secure | bool | `false` | Sets the secure attribute on cookie so that it only be send over https |
+| balancer.env.AWS_SECRETS_MANAGER_SECRET_ID_1 | string | `"wrongsecret"` |  |
+| balancer.env.AWS_SECRETS_MANAGER_SECRET_ID_2 | string | `"wrongsecret-2"` |  |
+| balancer.env.AZ_KEYVAULT_SECRET_ID_1 | string | `"wrongsecret"` |  |
+| balancer.env.AZ_KEYVAULT_SECRET_ID_2 | string | `"wrongsecret-2"` |  |
 | balancer.env.AZ_KEY_VAULT_NAME | string | `""` |  |
 | balancer.env.AZ_KEY_VAULT_TENANT_ID | string | `""` |  |
 | balancer.env.AZ_POD_CLIENT_ID | string | `""` |  |
 | balancer.env.AZ_VAULT_URI | string | `""` |  |
 | balancer.env.CHALLENGE33_VALUE | string | `"VkJVR2gzd3UvM0kxbmFIajFVZjk3WTBMcThCNS85MnExandwMy9hWVN3SFNKSThXcWRabllMajc4aEVTbGZQUEtmMVpLUGFwNHoyK3IrRzlOUndkRlUvWUJNVFkzY05ndU1tNUM2bDJwVEs5SmhQRm5VemVySXdNcm5odTlHanJxU0ZuL0J0T3ZMblFhL21TZ1hETkpZVU9VOGdDSEZzOUpFZVF2OWhwV3B5eGxCMk5xdTBNSHJQTk9EWTNab2hoa2pXWGF4YmpDWmk5U3BtSHlkVTA2WjdMcVd5RjM5RzZWOENGNkxCUGtkVW4zYUpBVisrRjBROUljU009Cg=="` |  |
+| balancer.env.GCP_PROJECT_ID | string | `""` |  |
+| balancer.env.GCP_SECRETS_MANAGER_SECRET_ID_1 | string | `"wrongsecret"` |  |
+| balancer.env.GCP_SECRETS_MANAGER_SECRET_ID_2 | string | `"wrongsecret-2"` |  |
 | balancer.env.IRSA_ROLE | string | `"arn:aws:iam::233483431651:role/wrongsecrets-secret-manager"` |  |
 | balancer.env.K8S_ENV | string | `"k8s"` |  |
-| balancer.env.KEYVAULT_SECRET_ID_1 | string | `"wrongsecret"` |  |
-| balancer.env.KEYVAULT_SECRET_ID_2 | string | `"wrongsecret-2"` |  |
 | balancer.env.REACT_APP_ACCESS_PASSWORD | string | `""` |  |
+| balancer.env.REACT_APP_AZ_BLOB_URL | string | `"az://funstuff"` |  |
 | balancer.env.REACT_APP_CREATE_TEAM_HMAC_KEY | string | `"hardcodedkey"` |  |
 | balancer.env.REACT_APP_CTFD_URL | string | `"https://ctfd.io"` |  |
+| balancer.env.REACT_APP_GCP_BUCKET_URL | string | `"gs://funstuff"` |  |
 | balancer.env.REACT_APP_HEROKU_WRONGSECRETS_URL | string | `"https://wrongsecrets-ctf.herokuapp.com"` |  |
 | balancer.env.REACT_APP_MOVING_GIF_LOGO | string | `"https://i.gifer.com/9kGQ.gif"` |  |
 | balancer.env.REACT_APP_S3_BUCKET_URL | string | `"s3://funstuff"` |  |
-| balancer.env.SECRETS_MANAGER_SECRET_ID_1 | string | `"wrongsecret"` |  |
-| balancer.env.SECRETS_MANAGER_SECRET_ID_2 | string | `"wrongsecret-2"` |  |
 | balancer.livenessProbe | object | `{"httpGet":{"path":"/balancer/","port":"http"}}` | livenessProbe: Checks if the balancer pod is still alive |
 | balancer.metrics.basicAuth.password | string | `"ERzCT4pwBDxfCKRGmfrMa8KQ8sXf8GKy"` | Should be changed when metrics are enabled. |
 | balancer.metrics.basicAuth.username | string | `"prometheus-scraper"` |  |
@@ -109,7 +114,7 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | balancer.service.loadBalancerSourceRanges | string | `nil` | list of IP CIDRs allowed access to lb (if supported) |
 | balancer.service.type | string | `"ClusterIP"` | Kubernetes service type |
 | balancer.skipOwnerReference | bool | `false` | If set to true this skips setting ownerReferences on the teams wrongsecrets Deployment and Services. This lets MultiJuicer run in older kubernetes cluster which don't support the reference type or the app/v1 deployment type |
-| balancer.tag | string | `"1.6.9aws"` |  |
+| balancer.tag | string | `"1.6.10cloud"` |  |
 | balancer.tolerations | list | `[]` | Optional Configure kubernetes toleration for the created wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | balancer.volumeMounts[0] | object | `{"mountPath":"/home/app/config/","name":"config-volume"}` | If true, creates a volumeMount for the created pods. This is required for the podSecurityPolicy to work |
 | balancer.volumes[0] | object | `{"configMap":{"name":"wrongsecrets-balancer-config"},"name":"config-volume"}` | If true, creates a volume for the created pods. This is required for the podSecurityPolicy to work |
@@ -154,12 +159,12 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | virtualdesktop.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | virtualdesktop.securityContext.runAsNonRoot | bool | `true` |  |
 | virtualdesktop.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| virtualdesktop.tag | string | `"1.6.9"` |  |
+| virtualdesktop.tag | string | `"1.6.10"` |  |
 | virtualdesktop.tolerations | list | `[]` |  |
 | wrongsecrets.affinity | object | `{}` | Optional Configure kubernetes scheduling affinity for the created Wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
 | wrongsecrets.config | string | See values.yaml for full details | Specify a custom Wrongsecrets config.yaml. See the Wrongsecrets Docs for any needed ENVs: https://github.com/OWASP/wrongsecrets |
 | wrongsecrets.ctfKey | string | `"zLp@.-6fMW6L-7R3b!9uR_K!NfkkTr"` | Change the key when hosting a CTF event. This key gets used to generate the challenge flags. See: https://github.com/OWASP/wrongsecrets#ctf |
-| wrongsecrets.env | list | `[{"name":"K8S_ENV","value":"azure"},{"name":"SPECIAL_K8S_SECRET","valueFrom":{"configMapKeyRef":{"key":"funny.entry","name":"secrets-file"}}},{"name":"SPECIAL_SPECIAL_K8S_SECRET","valueFrom":{"secretKeyRef":{"key":"funnier","name":"funnystuff"}}}]` | Optional environment variables to set for each Wrongsecrets instance (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) |
+| wrongsecrets.env | list | `[{"name":"K8S_ENV","value":"k8s"},{"name":"SPECIAL_K8S_SECRET","valueFrom":{"configMapKeyRef":{"key":"funny.entry","name":"secrets-file"}}},{"name":"SPECIAL_SPECIAL_K8S_SECRET","valueFrom":{"secretKeyRef":{"key":"funnier","name":"funnystuff"}}}]` | Optional environment variables to set for each Wrongsecrets instance (see: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) |
 | wrongsecrets.envFrom | list | `[]` | Optional mount environment variables from configMaps or secrets (see: https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#configure-all-key-value-pairs-in-a-secret-as-container-environment-variables) |
 | wrongsecrets.image | string | `"jeroenwillemsen/wrongsecrets"` | Wrongsecrets Image to use |
 | wrongsecrets.maxInstances | int | `500` | Specifies how many Wrongsecrets instances should start at max. Set to -1 to remove the max Wrongsecrets instance cap |
@@ -167,7 +172,7 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | wrongsecrets.resources | object | `{"requests":{"cpu":"256Mi","memory":"300Mi"}}` | Optional resources definitions to set for each Wrongsecrets instance |
 | wrongsecrets.runtimeClassName | string | `nil` | Optional Can be used to configure the runtime class for the Wrongsecrets instances pods to add an additional layer of isolation to reduce the impact of potential container escapes. (see: https://kubernetes.io/docs/concepts/containers/runtime-class/) |
 | wrongsecrets.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Optional securityContext definitions to set for each Wrongsecrets instance |
-| wrongsecrets.tag | string | `"1.6.9-no-vault"` |  |
+| wrongsecrets.tag | string | `"1.6.10-no-vault"` |  |
 | wrongsecrets.tolerations | list | `[]` | Optional Configure kubernetes toleration for the created Wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | wrongsecrets.volumes | list | `[]` | Optional Volumes to set for each Wrongsecrets instance (see: https://kubernetes.io/docs/concepts/storage/volumes/) |
 | wrongsecretsCleanup.affinity | object | `{}` | Optional Configure kubernetes scheduling affinity for the wrongsecretsCleanup Job(see: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
