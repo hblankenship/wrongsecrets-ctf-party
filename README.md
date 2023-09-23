@@ -40,7 +40,7 @@ To uninstall the chart:
     helm delete my-wrongsecrets-ctf-party
 # wrongsecrets-ctf-party
 
-![Version: 1.6.10](https://img.shields.io/badge/Version-1.6.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.10](https://img.shields.io/badge/AppVersion-1.6.10-informational?style=flat-square)
+![Version: 1.6.10b](https://img.shields.io/badge/Version-1.6.10b-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.10b](https://img.shields.io/badge/AppVersion-1.6.10b-informational?style=flat-square)
 
 Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 
