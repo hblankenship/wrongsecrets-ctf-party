@@ -14,6 +14,7 @@ WrongSecrets CTF Party gives you the ability to run separate WrongSecrets instan
 - runs on a single domain, comes with a LoadBalancer sending the traffic to the participants WrongSecrets instance
 - backup and auto apply challenge progress in case of Juice Shop container restarts
 - cleanup old & unused instances automatically
+- comes with a monitoring chart to monitor the instances and the cluster using Prometheus & Grafana
 
 It follows the same architecture as MultiJuicer below:
 ![MultiJuicer, High Level Architecture Diagram](https://raw.githubusercontent.com/iteratec/multi-juicer/main/high-level-architecture.svg)
@@ -40,7 +41,7 @@ To uninstall the chart:
     helm delete my-wrongsecrets-ctf-party
 # wrongsecrets-ctf-party
 
-![Version: 1.7.0](https://img.shields.io/badge/Version-1.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.0](https://img.shields.io/badge/AppVersion-1.7.0-informational?style=flat-square)
+![Version: 1.7.1](https://img.shields.io/badge/Version-1.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.1](https://img.shields.io/badge/AppVersion-1.7.1-informational?style=flat-square)
 
 Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 
@@ -49,6 +50,14 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 ## Source Code
 
 * <https://github.com/OWASP/wrongsecrets-ctf-party>
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://grafana.github.io/helm-charts | loki | 2.16.0 |
+| https://grafana.github.io/helm-charts | promtail | 3.6.0 |
+| https://prometheus-community.github.io/helm-charts | kube-prometheus-stack | 43.1.4 |
 
 ## Values
 
@@ -92,13 +101,6 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | balancer.env.REACT_APP_MOVING_GIF_LOGO | string | `"https://i.gifer.com/9kGQ.gif"` |  |
 | balancer.env.REACT_APP_S3_BUCKET_URL | string | `"s3://funstuff"` |  |
 | balancer.livenessProbe | object | `{"httpGet":{"path":"/balancer/","port":"http"}}` | livenessProbe: Checks if the balancer pod is still alive |
-| balancer.metrics.basicAuth.password | string | `"ERzCT4pwBDxfCKRGmfrMa8KQ8sXf8GKy"` | Should be changed when metrics are enabled. |
-| balancer.metrics.basicAuth.username | string | `"prometheus-scraper"` |  |
-| balancer.metrics.dashboards.enabled | bool | `false` | if true, creates a Grafana Dashboard Config Map. (also requires metrics.enabled to be true). These will automatically be imported by Grafana when using the Grafana helm chart, see: https://github.com/helm/charts/tree/main/stable/grafana#sidecar-for-dashboards |
-| balancer.metrics.enabled | bool | `true` | enables prometheus metrics for the balancer. If set to true you should change the prometheus-scraper password |
-| balancer.metrics.serviceMonitor.enabled | bool | `false` | If true, creates a Prometheus Operator ServiceMonitor (also requires metrics.enabled to be true). This will also deploy a servicemonitor which monitors metrics from the Wrongsecrets instances |
-| balancer.metrics.serviceMonitor.path | string | `"/balancer/metrics"` | Path to scrape for metrics |
-| balancer.metrics.serviceMonitor.targetPort | int | `3000` | Target port for the ServiceMonitor to scrape |
 | balancer.podSecurityContext.enabled | bool | `true` | If true, sets the securityContext on the created pods. This is required for the podSecurityPolicy to work |
 | balancer.podSecurityContext.fsGroup | int | `2000` |  |
 | balancer.podSecurityContext.runAsGroup | int | `3000` |  |
@@ -114,7 +116,7 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | balancer.service.loadBalancerSourceRanges | string | `nil` | list of IP CIDRs allowed access to lb (if supported) |
 | balancer.service.type | string | `"ClusterIP"` | Kubernetes service type |
 | balancer.skipOwnerReference | bool | `false` | If set to true this skips setting ownerReferences on the teams wrongsecrets Deployment and Services. This lets MultiJuicer run in older kubernetes cluster which don't support the reference type or the app/v1 deployment type |
-| balancer.tag | string | `"1.7.0cloud"` |  |
+| balancer.tag | string | `"1.7.2cloud"` |  |
 | balancer.tolerations | list | `[]` | Optional Configure kubernetes toleration for the created wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | balancer.volumeMounts[0] | object | `{"mountPath":"/home/app/config/","name":"config-volume"}` | If true, creates a volumeMount for the created pods. This is required for the podSecurityPolicy to work |
 | balancer.volumes[0] | object | `{"configMap":{"name":"wrongsecrets-balancer-config"},"name":"config-volume"}` | If true, creates a volume for the created pods. This is required for the podSecurityPolicy to work |
@@ -123,6 +125,21 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | ingress.enabled | bool | `false` | If true, Wrongsecrets will create an Ingress object for the balancer service. Useful if you want to expose the balancer service externally for example with a loadbalancer in order to view any webpages that are hosted on the balancer service. |
 | ingress.hosts | list | `[{"host":"wrongsecrets-ctf-party.local","paths":["/"]}]` | Hostnames to your Wrongsecrets balancer installation. |
 | ingress.tls | list | `[]` | TLS configuration for Wrongsecrets balancer |
+| kube-prometheus-stack.enabled | bool | `true` | If true, installs the kube-prometheus-stack chart which includes Prometheus, Alertmanager, Grafana, and other monitoring components |
+| kube-prometheus-stack.grafana.adminPassword | string | `"prom-operator"` | Password for the default "admin" user |
+| kube-prometheus-stack.grafana.defaultDashboardsEnabled | bool | `true` | Deploy default dashboards |
+| kube-prometheus-stack.grafana.defaultDashboardsTimezone | string | `"utc"` | Other options are: browser or a specific timezone, i.e. Europe/Luxembourg |
+| kube-prometheus-stack.grafana.enabled | bool | `true` |  |
+| kube-prometheus-stack.grafana.forceDeployDashboards | bool | `false` | ForceDeployDashboard Create dashboard configmap even if grafana deployment has been disabled |
+| kube-prometheus-stack.grafana.forceDeployDatasources | bool | `false` | ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled |
+| kube-prometheus-stack.grafana.ingress.annotations | object | `{}` |  |
+| kube-prometheus-stack.grafana.ingress.enabled | bool | `false` |  |
+| kube-prometheus-stack.grafana.ingress.hosts | list | `[]` |  hosts:   - grafana.domain.com |
+| kube-prometheus-stack.grafana.ingress.labels | object | `{}` |  |
+| kube-prometheus-stack.grafana.ingress.path | string | `"/"` | Path for grafana ingress |
+| kube-prometheus-stack.grafana.ingress.tls | list | `[]` |  |
+| kube-prometheus-stack.grafana.namespaceOverride | string | `""` |  |
+| kube-prometheus-stack.grafana.rbac.pspEnabled | bool | `false` | If true, Grafana PSPs will be created |
 | nodeSelector | object | `{}` |  |
 | service.port | int | `3000` |  |
 | service.portName | string | `"web"` |  |
@@ -159,7 +176,7 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | virtualdesktop.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | virtualdesktop.securityContext.runAsNonRoot | bool | `true` |  |
 | virtualdesktop.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| virtualdesktop.tag | string | `"1.7.0C"` |  |
+| virtualdesktop.tag | string | `"1.7.2"` |  |
 | virtualdesktop.tolerations | list | `[]` |  |
 | wrongsecrets.affinity | object | `{}` | Optional Configure kubernetes scheduling affinity for the created Wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
 | wrongsecrets.config | string | See values.yaml for full details | Specify a custom Wrongsecrets config.yaml. See the Wrongsecrets Docs for any needed ENVs: https://github.com/OWASP/wrongsecrets |
@@ -172,7 +189,7 @@ Run Multi User "Capture the Flags" or Security Trainings with OWASP Wrongsecrets
 | wrongsecrets.resources | object | `{"requests":{"cpu":"256Mi","memory":"300Mi"}}` | Optional resources definitions to set for each Wrongsecrets instance |
 | wrongsecrets.runtimeClassName | string | `nil` | Optional Can be used to configure the runtime class for the Wrongsecrets instances pods to add an additional layer of isolation to reduce the impact of potential container escapes. (see: https://kubernetes.io/docs/concepts/containers/runtime-class/) |
 | wrongsecrets.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Optional securityContext definitions to set for each Wrongsecrets instance |
-| wrongsecrets.tag | string | `"1.7.0-no-vault"` |  |
+| wrongsecrets.tag | string | `"1.7.2-no-vault"` |  |
 | wrongsecrets.tolerations | list | `[]` | Optional Configure kubernetes toleration for the created Wrongsecrets instances (see: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | wrongsecrets.volumes | list | `[]` | Optional Volumes to set for each Wrongsecrets instance (see: https://kubernetes.io/docs/concepts/storage/volumes/) |
 | wrongsecretsCleanup.affinity | object | `{}` | Optional Configure kubernetes scheduling affinity for the wrongsecretsCleanup Job(see: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
