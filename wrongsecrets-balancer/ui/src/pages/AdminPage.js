@@ -156,13 +156,14 @@ function DeleteInstanceButton({ team }) {
 }
 
 export default function AdminPage() {
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState(updateAdminData());
   const { formatMessage, formatDate } = useIntl();
 
   function updateAdminData() {
     return axios
       .get(`/balancer/admin/all`)
       .then(({ data }) => {
+        console.log('getting all teams data')
         setTeams(data.instances);
       })
       .catch((err) => {

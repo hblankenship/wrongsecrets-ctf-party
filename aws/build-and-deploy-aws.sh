@@ -137,8 +137,10 @@ else
 fi
 
 echo "App password is ${APP_PASSWORD}"
+echo "executing helm install of wrongsecrets"
 helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
   --set="balancer.env.K8S_ENV=aws" \
+  --set="balancer.tag=1.9.0alpha4-cloud" \
   --set="balancer.env.IRSA_ROLE=${IRSA_ROLE_ARN}" \
   --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${APP_PASSWORD}" \
   --set="balancer.env.REACT_APP_S3_BUCKET_URL=s3://${STATE_BUCKET}" \
