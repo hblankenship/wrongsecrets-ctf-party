@@ -499,7 +499,9 @@ async function createAWSTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team} on AWS: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on AWS: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }
@@ -619,7 +621,9 @@ async function createAzureTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team} on Azure: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on Azure: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }
@@ -765,7 +769,9 @@ async function createGCPTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team} on GCP: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on GCP: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }
