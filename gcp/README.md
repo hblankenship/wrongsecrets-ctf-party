@@ -51,19 +51,7 @@ The bucket name should be in the output. Please use that to configure the Terraf
 7. Run `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the GCP backplane.
 8. Run `export USE_GKE_GCLOUD_AUTH_PLUGIN=True`
 9. When creation is done, run `gcloud container clusters get-credentials wrongsecrets-exercise-cluster --region YOUR_REGION`. Note if it errors on a missing plugin to support `kubectl`, then run `gcloud components install gke-gcloud-auth-plugin` and `gcloud container clusters get-credentials wrongsecrets-exercise-cluster`.
-10. Go to the values of the helm chart and replace the wrongsecrets.config with this:
-
-    ```yaml
-    K8S_ENV: "gcp"
-    ```
-
-    and replace the value of wrongsecrets.env having the name 'K8S_ENV' with this:
-
-    ```yaml
-    value: "gcp"
-    ```
-
-11. Run `./build-and-deploy-gcp.sh`
+10. Run `./build-and-deploy-gcp.sh`
 
 Your GKE cluster should be visible in [EU-West4](https://console.cloud.google.com/kubernetes?referrer=search&project=wrongsecrets) by default. Want a different region? You can modify `terraform.tfvars` or input it directly using the `region` variable in plan/apply.
 

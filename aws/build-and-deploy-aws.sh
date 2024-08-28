@@ -154,7 +154,7 @@ export HELM_EXPERIMENTAL_OCI=1
 kubectl create namespace ctfd
 
 # Double base64 encoding to prevent weird character errors in ctfd
-helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd \
+helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --version 0.6.3\
   --set="redis.auth.password=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.rootPassword=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.password=$(openssl rand -base64 24 | base64)" \
