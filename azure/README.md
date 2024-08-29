@@ -49,7 +49,7 @@ The storage account name should be in the output. Please use that to configure t
 
 ### WrongSecrets-ctf-party
 
-1. Set either a new resource group or use an existing resource group in `main.tf` (it defaults to the existing `OWASP-Projects` resource group). Note that you'll need to find/replace references to "azurerm_resource_group.default" to "arurerm_resource_group.default" if you want to create a new one.
+1. Set either a new resource group or use an existing resource group in [`main.tf`](main.tf) (it defaults to the existing `OWASP-Projects` resource group). Note that you'll need to find/replace references to `azurerm_resource_group.default` to `data.arurerm_resource_group.default` if you want to create a new one.
 2. check whether you have the right project by doing `az account show` (after `az login`). Want to set the project as your default? Use `az account set --subscription <.id here>`.
 3. If not yet enabled, register the required services for the subscription, run:
 ```shell

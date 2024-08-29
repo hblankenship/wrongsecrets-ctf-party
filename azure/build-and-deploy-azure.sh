@@ -32,6 +32,7 @@ esac
 
 echo "This is a script to bootstrap the configuration. You need to have installed: helm, kubectl, vault, grep, cat, sed, envsubst, and azure cli, and is only tested on mac, Debian and Ubuntu"
 
+echo "obtaining the shared state locally, if you use shared state you will see an error below, there is no problem in that case"
 # The storage account to store the terraform state file
 export AZ_STORAGE_ACCOUNT="$(terraform -chdir=./shared-state output -raw storage_account_name)"
 
