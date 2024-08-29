@@ -52,9 +52,11 @@ The storage account name should be in the output. Please use that to configure t
 1. Set either a new resource group or use an existing resource group in `main.tf` (it defaults to the existing `OWASP-Projects` resource group). Note that you'll need to find/replace references to "azurerm_resource_group.default" to "arurerm_resource_group.default" if you want to create a new one.
 2. check whether you have the right project by doing `az account show` (after `az login`). Want to set the project as your default? Use `az account set --subscription <.id here>`.
 3. If not yet enabled, register the required services for the subscription, run:
-    - `az provider register --namespace Microsoft.ContainerService`
-    - `az provider register --namespace Microsoft.KeyVault`
-    - `az provider register --namespace Microsoft.ManagedIdentity`
+```shell
+        az provider register --namespace Microsoft.ContainerService
+        az provider register --namespace Microsoft.KeyVault
+        az provider register --namespace Microsoft.ManagedIdentity
+```
 4. Run `terraform init` (if required, use `tfenv` to select TF 0.14.0 or higher )
 5. Run `terraform plan` to see what will be created (optional).
 6. Run `terraform apply`. Note: the apply will take 5 to 20 minutes depending on the speed of the Azure backplane.
