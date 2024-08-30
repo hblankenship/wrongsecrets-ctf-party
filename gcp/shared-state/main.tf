@@ -23,8 +23,9 @@ resource "random_id" "suffix" {
 }
 
 resource "google_storage_bucket" "state_bucket" {
-  name     = "tfstate-wrongsecrets-${random_id.suffix.hex}"
-  location = var.region
+  name          = "tfstate-wrongsecrets-${random_id.suffix.hex}"
+  location      = var.region
+  force_destroy = true
 
   versioning {
     enabled = true

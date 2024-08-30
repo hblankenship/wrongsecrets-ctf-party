@@ -21,7 +21,7 @@ Please note that this setup relies on bash scripts that have been tested in MacO
 
 ## Installation
 
-**Note-I**: We create resources in `east us` by default. You can set the region by editing `terraform.tfvars`.
+**Note-I**: We create resources in `east us` by default. You can set the region by editing [`terraform.tfvars`](./terraform.tfvars).
 
 **Note-II**: The cluster you create has its access bound to the public IP of the creator. In other words: the cluster you create with this code has its access bound to your public IP-address if you apply it locally. If you switched to a different network, you'll need to run `terraform apply` again to update the firewall rules.
 
@@ -43,34 +43,24 @@ terraform init
 terraform apply
 ```
 
-The storage account name should be in the output. Please use that to configure the Terraform backend in `main.tf` by uncommenting the part on the `backend "azurerm"` inside the `terraform` block. Assign the `storage_account_name` to the one from the output.
+The storage account name should be in the output. Please use that to configure the Terraform backend in [`main.tf`](./main.tf) by uncommenting the part on the `backend "azurerm"` inside the `terraform` block. Assign the `storage_account_name` to the one from the output.
 
 **Note**: You'll need to follow the description [below](#wrongsecrets-ctf-party) in step 1 for the "existing resource group" i.e., use the `azurerm_resource_group.default` resource.
 
 ### WrongSecrets-ctf-party
 
-1. Set either a new resource group or use an existing resource group in `main.tf` (it defaults to the existing `OWASP-Projects` resource group). Note that you'll need to find/replace references to "azurerm_resource_group.default" to "arurerm_resource_group.default" if you want to create a new one.
+1. Set either a new resource group or use an existing resource group in [`main.tf`](main.tf) (it defaults to the existing `OWASP-Projects` resource group). Note that you'll need to find/replace references to `azurerm_resource_group.default` to `data.arurerm_resource_group.default` if you want to create a new one.
 2. check whether you have the right project by doing `az account show` (after `az login`). Want to set the project as your default? Use `az account set --subscription <.id here>`.
 3. If not yet enabled, register the required services for the subscription, run:
-    - `az provider register --namespace Microsoft.ContainerService`
-    - `az provider register --namespace Microsoft.KeyVault`
-    - `az provider register --namespace Microsoft.ManagedIdentity`
+```shell
+        az provider register --namespace Microsoft.ContainerService
+        az provider register --namespace Microsoft.KeyVault
+        az provider register --namespace Microsoft.ManagedIdentity
+```
 4. Run `terraform init` (if required, use `tfenv` to select TF 0.14.0 or higher )
 5. Run `terraform plan` to see what will be created (optional).
 6. Run `terraform apply`. Note: the apply will take 5 to 20 minutes depending on the speed of the Azure backplane.
-7. Go to the values of the helm chart and replace the wrongsecrets.config with this:
-
-    ```yaml
-    K8S_ENV: "azure"
-    ```
-
-    and replace the value of wrongsecrets.env having the name 'K8S_ENV' with this:
-
-    ```yaml
-    value: "azure"
-    ```
-
-8. Run `./build-and-deploy-azure.sh`. Your kubeconfig file will automatically be updated.
+7. Run `./build-and-deploy-azure.sh`. Your kubeconfig file will automatically be updated.
 
 Your AKS cluster should be visible in your resource group. Want a different region? You can modify `terraform.tfvars` or input it directly using the `region` variable in plan/apply.
 
@@ -206,7 +196,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The AKS cluster name | `string` | `"wrongsecrets-exercise-cluster"` | no |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The AKS cluster version to use | `string` | `"1.27"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The AKS cluster version to use | `string` | `"1.30"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The Azure region to use | `string` | `"East US"` | no |
 
 ## Outputs

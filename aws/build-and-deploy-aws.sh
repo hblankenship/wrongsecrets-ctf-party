@@ -137,8 +137,10 @@ else
 fi
 
 echo "App password is ${APP_PASSWORD}"
+echo "executing helm install of wrongsecrets"
 helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
   --set="balancer.env.K8S_ENV=aws" \
+  --set="balancer.tag=1.9.0alpha5-cloud" \
   --set="balancer.env.IRSA_ROLE=${IRSA_ROLE_ARN}" \
   --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${APP_PASSWORD}" \
   --set="balancer.env.REACT_APP_S3_BUCKET_URL=s3://${STATE_BUCKET}" \
@@ -152,7 +154,7 @@ export HELM_EXPERIMENTAL_OCI=1
 kubectl create namespace ctfd
 
 # Double base64 encoding to prevent weird character errors in ctfd
-helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd \
+helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --version 0.6.3\
   --set="redis.auth.password=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.rootPassword=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.password=$(openssl rand -base64 24 | base64)" \

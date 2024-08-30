@@ -545,9 +545,9 @@ const createAWSDeploymentForTeam = async ({ team, passcodeHash }) => {
                     },
                   },
                 },
-                ...get('wrongsecrets.env', []),
+                // ...get('wrongsecrets.env', []),
               ],
-              envFrom: get('wrongsecrets.envFrom'),
+              // envFrom: get('wrongsecrets.envFrom'),
               ports: [
                 {
                   containerPort: 8080,
@@ -837,7 +837,7 @@ const createAzureDeploymentForTeam = async ({ team, passcodeHash }) => {
                     },
                   },
                 },
-                ...get('wrongsecrets.env', []),
+                // ...get('wrongsecrets.env', []),
               ],
               envFrom: get('wrongsecrets.envFrom'),
               ports: [
@@ -1191,7 +1191,7 @@ const createGCPDeploymentForTeam = async ({ team, passcodeHash }) => {
                     },
                   },
                 },
-                ...get('wrongsecrets.env', []),
+                //...get('wrongsecrets.env', []),
               ],
               envFrom: get('wrongsecrets.envFrom'),
               ports: [
@@ -1831,12 +1831,12 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
               resources: {
                 requests: {
                   memory: '2.5G',
-                  cpu: '800m',
+                  cpu: '600m',
                   'ephemeral-storage': '4Gi',
                 },
                 limits: {
                   memory: '3.5G',
-                  cpu: '2000m',
+                  cpu: '1900m',
                   'ephemeral-storage': '8Gi',
                 },
               },

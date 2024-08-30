@@ -104,13 +104,12 @@ echo "You can find the app password in password.txt"
 
 helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
   --set="balancer.env.K8S_ENV=gcp" \
+  --set="balancer.tag=1.9.0alpha5-cloud" \
   --set="balancer.env.REACT_APP_GCP_BUCKET_URL=https://console.cloud.google.com/storage/browser/${GCP_BUCKET_NAME}" \
   --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${APP_PASSWORD}" \
   --set="balancer.env.REACT_APP_CREATE_TEAM_HMAC_KEY=${CREATE_TEAM_HMAC}" \
   --set="balancer.cookie.cookieParserSecret=${COOKIE_PARSER_SECRET}" \
-  --set="balancer.env.GCP_PROJECT_ID=${GCP_PROJECT}" \
-  --set="balancer.repository=osamamagdy/wrongsecrets-balancer" \
-  --set="balancer.tag=v1.3.5"
+  --set="balancer.env.GCP_PROJECT_ID=${GCP_PROJECT}"
 
 kubectl annotate serviceaccount \
   --namespace default wrongsecrets-balancer \
