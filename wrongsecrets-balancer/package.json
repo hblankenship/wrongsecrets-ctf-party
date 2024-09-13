@@ -23,7 +23,7 @@
     "express": "^4.21.0",
     "express-joi-validation": "^5.0.1",
     "google-auth-library": "^9.14.1",
-    "googleapis": "^140.0.1",
+    "googleapis": "^144.0.0",
     "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^3.0.1",
     "joi": "^17.13.3",
