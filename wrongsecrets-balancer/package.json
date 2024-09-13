@@ -20,7 +20,7 @@
     "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",
     "crypto-random-string": "^3.3.1",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "express-joi-validation": "^5.0.1",
     "google-auth-library": "^9.13.0",
     "googleapis": "^140.0.1",
