@@ -25,7 +25,7 @@
     "google-auth-library": "^9.14.1",
     "googleapis": "^144.0.0",
     "http-proxy": "^1.18.1",
-    "http-proxy-middleware": "^3.0.1",
+    "http-proxy-middleware": "^3.0.2",
     "joi": "^17.13.3",
     "lodash": "^4.17.21",
     "minimatch": "^10.0.1",
