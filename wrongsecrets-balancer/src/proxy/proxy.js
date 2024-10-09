@@ -66,6 +66,7 @@ async function checkIfInstanceIsUp(req, res, next) {
     return res.redirect(`/balancer/?msg=instance-restarting&teamname=${teamname}`);
   } catch (error) {
     logger.warn(`Could not find instance for team: '${teamname}'`);
+    logger.warn(JSON.stringify(error));
     res.redirect(`/balancer/?msg=instance-not-found&teamname=${teamname}`);
   }
 }
