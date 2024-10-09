@@ -82,6 +82,10 @@ module "eks" {
     }
   }
 
+  cluster_upgrade_policy = {
+    support_type = "STANDARD"
+  }
+
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -98,7 +102,7 @@ module "eks" {
 
   # apply when available: iam_role_permissions_boundary = "arn:aws:iam::${local.account_id}:policy/service-user-creation-permission-boundary"
   eks_managed_node_group_defaults = {
-    instance_types = ["t3a.medium"]
+    instance_types = ["t3a.large"]
     block_device_mappings = [
       {
         device_name = "/dev/xvda"
