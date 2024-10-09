@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import DataTable, { createTheme } from 'react-data-table-component';
 import { FormattedRelativeTime, defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import { selectUnit } from '@formatjs/intl-utils';
@@ -96,10 +95,16 @@ const messages = defineMessages({
 function RestartInstanceButton({ team }) {
   const [restarting, setRestarting] = useState(false);
 
-  const restart = (event) => {
+  const restart = async (event) => {
     event.preventDefault();
     setRestarting(true);
-    axios.post(`/balancer/admin/teams/${team}/restart`).finally(() => setRestarting(false));
+    try {
+      await fetch(`/balancer/admin/teams/${team}/restart`, {
+        method: 'POST',
+      });
+    } finally {
+      setRestarting(false);
+    }
   };
   return (
     <SmallSecondary onClick={restart}>
@@ -115,10 +120,16 @@ function RestartInstanceButton({ team }) {
 function RestartDesktopInstanceButton({ team }) {
   const [restarting, setRestarting] = useState(false);
 
-  const restart = (event) => {
+  const restart = async (event) => {
     event.preventDefault();
     setRestarting(true);
-    axios.post(`/balancer/admin/teams/${team}/restartdesktop`).finally(() => setRestarting(false));
+    try {
+      await fetch(`/balancer/admin/teams/${team}/restartdesktop`, {
+        method: 'POST',
+      });
+    } finally {
+      setRestarting(false);
+    }
   };
   return (
     <SmallSecondary onClick={restart}>
@@ -136,13 +147,20 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 function DeleteInstanceButton({ team }) {
   const [deleting, setDeleting] = useState(false);
 
-  const remove = (event) => {
+  const remove = async (event) => {
     event.preventDefault();
     setDeleting(true);
 
-    Promise.all([sleep(3000), axios.delete(`/balancer/admin/teams/${team}/delete`)]).finally(() =>
-      setDeleting(false)
-    );
+    try {
+      await Promise.all([
+        sleep(3000),
+        fetch(`/balancer/admin/teams/${team}/delete`, {
+          method: 'DELETE',
+        }),
+      ]);
+    } finally {
+      setDeleting(false);
+    }
   };
   return (
     <WarnSmallSecondary onClick={remove}>
@@ -185,17 +203,17 @@ export default function AdminPage() {
   const columns = [
     {
       name: formatMessage(messages.teamname),
-      selector: 'team',
+      selector: row => row.team,
       sortable: true,
     },
     {
       name: formatMessage(messages.name),
-      selector: 'name',
+      selector: row => row.name,
       sortable: true,
     },
     {
       name: formatMessage(messages.ready),
-      selector: 'ready',
+      selector: row => row.ready,
       sortable: true,
       right: true,
       // ready is just a emoji, so the colum can shrink
@@ -204,7 +222,7 @@ export default function AdminPage() {
     },
     {
       name: formatMessage(messages.created),
-      selector: 'createdAt',
+      selector: row => row.createdAt,
       sortable: true,
       format: ({ createdAt }) => {
         const { value, unit } = selectUnit(createdAt);
@@ -217,7 +235,7 @@ export default function AdminPage() {
     },
     {
       name: formatMessage(messages.lastUsed),
-      selector: 'lastConnect',
+      selector: row => row.lastConnect,
       sortable: true,
       format: ({ lastConnect }) => {
         const { value, unit } = selectUnit(lastConnect);
@@ -230,7 +248,7 @@ export default function AdminPage() {
     },
     {
       name: formatMessage(messages.actions),
-      selector: 'actions',
+      selector: row => row.actions,
       right: true,
       cell: ({ team }) => {
         return (
