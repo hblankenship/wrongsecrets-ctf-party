@@ -101,7 +101,7 @@ kubectl apply -f https://raw.githubusercontent.com/aws/secrets-store-csi-driver-
 
 echo "preparing calico via Helm"
 helm repo add projectcalico https://docs.projectcalico.org/charts
-helm upgrade --install calico projectcalico/tigera-operator --version v3.21.4
+helm upgrade --install calico projectcalico/tigera-operator --version v3.28.2
 
 echo "Generate secrets manager challenge secret 2"
 aws secretsmanager put-secret-value --secret-id wrongsecret-2 --secret-string "$(openssl rand -base64 24)" --region $AWS_REGION --output json --no-cli-pager
@@ -150,11 +150,8 @@ helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
 # Install CTFd
 echo "Installing CTFd"
 
-export HELM_EXPERIMENTAL_OCI=1
-kubectl create namespace ctfd
-
 # Double base64 encoding to prevent weird character errors in ctfd
-helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --version 0.6.3\
+helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --create-namespace --version v0.9.3\
   --set="redis.auth.password=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.rootPassword=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.password=$(openssl rand -base64 24 | base64)" \

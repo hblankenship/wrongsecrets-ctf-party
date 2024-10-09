@@ -1835,8 +1835,8 @@ const createDesktopDeploymentForTeam = async ({ team, passcodeHash }) => {
                   'ephemeral-storage': '4Gi',
                 },
                 limits: {
-                  memory: '3.5G',
-                  cpu: '1900m',
+                  memory: '4.0G',
+                  cpu: '2000m',
                   'ephemeral-storage': '8Gi',
                 },
               },
