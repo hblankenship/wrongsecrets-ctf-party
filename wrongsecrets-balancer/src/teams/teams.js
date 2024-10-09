@@ -113,7 +113,7 @@ async function validateHMAC(req, res, next) {
     }
     res.status(403).send({ message: 'Invalid validation, please stop doing this!' });
   } catch (error) {
-    logger.warn("invalid hmac provided;");
+    logger.warn('invalid hmac provided;');
     logger.warn(JSON.stringify(error));
     res.status(500).send({ message: 'Invalid validation, please stop doing this!' });
   }
@@ -143,7 +143,7 @@ async function validatePassword(req, res, next) {
       }
     }
   } catch (error) {
-    logger.warn("error duing password validation");
+    logger.warn('error duing password validation');
     logger.warn(JSON.stringify(error));
     res
       .status(500)
