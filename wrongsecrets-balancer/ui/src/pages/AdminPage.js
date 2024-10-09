@@ -156,19 +156,20 @@ function DeleteInstanceButton({ team }) {
 }
 
 export default function AdminPage() {
-  const [teams, setTeams] = useState(updateAdminData());
+  const [teams, setTeams] = useState([]);
   const { formatMessage, formatDate } = useIntl();
 
-  function updateAdminData() {
-    return axios
-      .get(`/balancer/admin/all`)
-      .then(({ data }) => {
-        console.log('getting all teams data')
-        setTeams(data.instances);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch current teams!', err);
-      });
+  async function updateAdminData() {
+    try {
+      const response = await fetch(`/balancer/admin/all`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch current teams');
+      }
+      const data = await response.json();
+      setTeams(data.instances);
+    } catch (err) {
+      console.error('Failed to fetch current teams!', err);
+    }
   }
 
   useEffect(() => {
