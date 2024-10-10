@@ -72,7 +72,7 @@ You can use the [Juiceshop CTF CLI](https://github.com/juice-shop/juice-shop-ctf
 Follow the following steps:
 
 ```shell
-    npm install -g juice-shop-ctf-cli@9.1.2
+    npm install -g juice-shop-ctf-cli@10.0.1
     juice-shop-ctf #choose ctfd and https://wrongsecrets-ctf.herokuapp.com as domain. No trailing slash! The key is 'test', by default feel free to enable hints. We do not support snippets or links/urls to code or hints.
 ```
 
@@ -150,7 +150,7 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.69.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.70.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
 
@@ -158,10 +158,10 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cluster_autoscaler_irsa_role"></a> [cluster\_autoscaler\_irsa\_role](#module\_cluster\_autoscaler\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.44.0 |
-| <a name="module_ebs_csi_irsa_role"></a> [ebs\_csi\_irsa\_role](#module\_ebs\_csi\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.44.0 |
+| <a name="module_cluster_autoscaler_irsa_role"></a> [cluster\_autoscaler\_irsa\_role](#module\_cluster\_autoscaler\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
+| <a name="module_ebs_csi_irsa_role"></a> [ebs\_csi\_irsa\_role](#module\_ebs\_csi\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 20.24.2 |
-| <a name="module_load_balancer_controller_irsa_role"></a> [load\_balancer\_controller\_irsa\_role](#module\_load\_balancer\_controller\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.44.0 |
+| <a name="module_load_balancer_controller_irsa_role"></a> [load\_balancer\_controller\_irsa\_role](#module\_load\_balancer\_controller\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.13.0 |
 
 ## Resources

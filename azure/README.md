@@ -84,7 +84,7 @@ You can use the [Juiceshop CTF CLI](https://github.com/juice-shop/juice-shop-ctf
 Follow the following steps:
 
 ```shell
-    npm install -g juice-shop-ctf-cli@9.1.2
+    npm install -g juice-shop-ctf-cli@10.0.1
     juice-shop-ctf #choose ctfd and https://wrongsecrets-ctf.herokuapp.com as domain. No trailing slash! The key is 'test', by default feel free to enable hints. We do not support snippets or links/urls to code or hints.
 ```
 
