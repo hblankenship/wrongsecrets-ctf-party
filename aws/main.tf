@@ -102,12 +102,12 @@ module "eks" {
 
   # apply when available: iam_role_permissions_boundary = "arn:aws:iam::${local.account_id}:policy/service-user-creation-permission-boundary"
   eks_managed_node_group_defaults = {
-    instance_types = ["t3a.large"]
+    instance_types = ["m5a.xlarge"]
     block_device_mappings = [
       {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size           = 20
+          volume_size           = 200
           volume_type           = "gp3"
           iops                  = 3000
           throughput            = 150
