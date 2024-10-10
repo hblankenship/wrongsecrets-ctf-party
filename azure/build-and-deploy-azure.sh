@@ -153,7 +153,7 @@ echo "You can find the app password in password.txt"
 
 helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
   --set="balancer.env.K8S_ENV=azure" \
-  --set="balancer.tag=1.9.0alpha5-cloud" \
+  --set="balancer.tag=1.9.2-cloud" \
   --set="balancer.env.REACT_APP_AZ_BLOB_URL=https://${AZ_STORAGE_ACCOUNT}.blob.core.windows.net/tfstate" \
   --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${APP_PASSWORD}" \
   --set="balancer.env.REACT_APP_CREATE_TEAM_HMAC_KEY=${CREATE_TEAM_HMAC}" \
