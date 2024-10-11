@@ -42,7 +42,7 @@ The terraform code is loosely based on [this EKS managed Node Group TF example](
 
 1. export your AWS credentials (`export AWS_PROFILE=awsuser`)
 2. check whether you have the right profile by doing `aws sts get-caller-identity`. Make sure you have the right account and have the rights to do this.
-3. Ensure you have set all the right variables in `terraform.tfvars`. If you want to use a custom domain with TLS, also fill out your domain name(s) and Route53 hosted zone here. Delegate (sub)domains to Route53 nameservers if you're not hosting your domain with Route53: [using the AWS docs](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+3. Ensure you have set all the right variables in `terraform.tfvars`. **Optional:** If you want to use a custom domain with TLS, also fill out your domain name(s) and Route53 hosted zone here. Delegate (sub)domains to Route53 nameservers if you're not hosting your domain with Route53: [using the AWS docs](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
 4. Do `terraform init` (if required, use tfenv to select TF 0.14.0 or higher )
 5. The bucket ARN will be asked in the next 2 steps. Take the one provided to you in the output earlier (e.g., `arn:aws:s3:::terraform-20230102231352749300000001`).
 6. Do `terraform plan`
