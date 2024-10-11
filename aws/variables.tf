@@ -6,19 +6,19 @@ variable "region" {
 variable "balancer_domain_name" {
   description = "The domain name to use"
   type        = string
-  default     = "ctf.wrongsecrets.com"
+  default     = ""
 }
 
 variable "ctfd_domain_name" {
   description = "The domain name to use"
   type        = string
-  default     = "ctfd.wrongsecrets.com"
+  default     = ""
 }
 
 variable "hosted_zone_id" {
   description = "The ID of the Route53 Hosted Zone to use"
   type        = string
-  default     = "Z0495090L8BJ8O5NYNKK"
+  default     = ""
 }
 
 variable "cluster_version" {
