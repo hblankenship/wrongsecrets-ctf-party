@@ -21,3 +21,6 @@ db.zip
 node_modules
 .npm
 gcp/k8s/secret-volume.yml
+
+aws/k8s/ctfd-ingress.yaml
+wrongsecrets-balancer-ingress.yml
