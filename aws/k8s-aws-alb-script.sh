@@ -75,9 +75,11 @@ EXTERNAL_DNS_ROLE_ARN="$(terraform output -raw external_dns_role_arn)"
 kubectl create serviceaccount -n kube-system external-dns
 kubectl annotate serviceaccount -n kube-system --overwrite external-dns eks.amazonaws.com/role-arn=${EXTERNAL_DNS_ROLE_ARN}
 
-echo "apply -f k8s/external-dns.yaml in 10 s"
+echo "apply -f k8s/external-dns-*.yaml in 10 s"
 sleep 10
-kubectl apply -f k8s/external-dns.yaml
+kubectl apply -f k8s/external-dns-clusterrole.yaml
+kubectl apply -f k8s/external-dns-clusterrolebinding.yaml
+kubectl apply -f k8s/external-dns-deployment.yaml
 
 
 echo "apply -f k8s/wrongsecrets-balancer-service.yml"
