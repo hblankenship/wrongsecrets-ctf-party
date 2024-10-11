@@ -42,13 +42,14 @@ The terraform code is loosely based on [this EKS managed Node Group TF example](
 
 1. export your AWS credentials (`export AWS_PROFILE=awsuser`)
 2. check whether you have the right profile by doing `aws sts get-caller-identity`. Make sure you have the right account and have the rights to do this.
-3. Do `terraform init` (if required, use tfenv to select TF 0.14.0 or higher )
-4. The bucket ARN will be asked in the next 2 steps. Take the one provided to you in the output earlier (e.g., `arn:aws:s3:::terraform-20230102231352749300000001`).
-5. Do `terraform plan`
-6. Do `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the AWS backplane.
-7. When creation is done, do `aws eks update-kubeconfig --region eu-west-1 --name wrongsecrets-exercise-cluster --kubeconfig ~/.kube/wrongsecrets`
-8. Do `export KUBECONFIG=~/.kube/wrongsecrets`
-9. Run `./build-and-deploy-aws.sh` to install all the required materials (helm for calico, secrets management, autoscaling, etc.)
+3. Ensure you have set all the right variables in `terraform.tfvars`. If you want to use a custom domain with TLS, also fill out your domain name(s) and Route53 hosted zone here. Delegate (sub)domains to Route53 nameservers if you're not hosting your domain with Route53: [using the AWS docs](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+4. Do `terraform init` (if required, use tfenv to select TF 0.14.0 or higher )
+5. The bucket ARN will be asked in the next 2 steps. Take the one provided to you in the output earlier (e.g., `arn:aws:s3:::terraform-20230102231352749300000001`).
+6. Do `terraform plan`
+7. Do `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the AWS backplane.
+8. When creation is done, do `aws eks update-kubeconfig --region eu-west-1 --name wrongsecrets-exercise-cluster --kubeconfig ~/.kube/wrongsecrets`
+9. Do `export KUBECONFIG=~/.kube/wrongsecrets`
+10. Run `./build-and-deploy-aws.sh` to install all the required materials (helm for calico, secrets management, autoscaling, etc.)
 
 Your EKS cluster should be visible in [eu-west-1](https://eu-west-1.console.aws.amazon.com/eks/home?region=eu-west-1#/clusters) by default. Want a different region? You can modify `terraform.tfvars` or input it directly using the `region` variable in plan/apply.
 

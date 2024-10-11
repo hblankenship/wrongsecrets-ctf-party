@@ -68,3 +68,28 @@ output "state_bucket_name" {
   description = "Terraform s3 state bucket name"
   value       = split(":", var.state_bucket_arn)[length(split(":", var.state_bucket_arn)) - 1]
 }
+
+output "balancer_acm_cert_arn" {
+  description = "Balancer ACM certificate ARN"
+  value       = var.balancer_domain_name == "" ? null : one(module.acm_balancer).acm_certificate_arn
+}
+
+output "balancer_domain_name" {
+  description = "Balancer domain name"
+  value       = var.balancer_domain_name
+}
+
+output "ctfd_acm_cert_arn" {
+  description = "CTFd ACM certificate ARN"
+  value       = var.ctfd_domain_name == "" ? null : one(module.acm_ctfd).acm_certificate_arn
+}
+
+output "ctfd_domain_name" {
+  description = "CTFd domain name"
+  value       = var.ctfd_domain_name
+}
+
+output "external_dns_role_arn" {
+  description = "External DNS role"
+  value       = module.external_dns_irsa_role.iam_role_arn
+}
