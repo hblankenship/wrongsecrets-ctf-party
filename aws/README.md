@@ -42,13 +42,14 @@ The terraform code is loosely based on [this EKS managed Node Group TF example](
 
 1. export your AWS credentials (`export AWS_PROFILE=awsuser`)
 2. check whether you have the right profile by doing `aws sts get-caller-identity`. Make sure you have the right account and have the rights to do this.
-3. Do `terraform init` (if required, use tfenv to select TF 0.14.0 or higher )
-4. The bucket ARN will be asked in the next 2 steps. Take the one provided to you in the output earlier (e.g., `arn:aws:s3:::terraform-20230102231352749300000001`).
-5. Do `terraform plan`
-6. Do `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the AWS backplane.
-7. When creation is done, do `aws eks update-kubeconfig --region eu-west-1 --name wrongsecrets-exercise-cluster --kubeconfig ~/.kube/wrongsecrets`
-8. Do `export KUBECONFIG=~/.kube/wrongsecrets`
-9. Run `./build-and-deploy-aws.sh` to install all the required materials (helm for calico, secrets management, autoscaling, etc.)
+3. Ensure you have set all the right variables in `terraform.tfvars`. **Optional:** If you want to use a custom domain with TLS, also fill out your domain name(s) and Route53 hosted zone here. Delegate (sub)domains to Route53 nameservers if you're not hosting your domain with Route53: [using the AWS docs](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+4. Do `terraform init` (if required, use tfenv to select TF 0.14.0 or higher )
+5. The bucket ARN will be asked in the next 2 steps. Take the one provided to you in the output earlier (e.g., `arn:aws:s3:::terraform-20230102231352749300000001`).
+6. Do `terraform plan`
+7. Do `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the AWS backplane.
+8. When creation is done, do `aws eks update-kubeconfig --region eu-west-1 --name wrongsecrets-exercise-cluster --kubeconfig ~/.kube/wrongsecrets`
+9. Do `export KUBECONFIG=~/.kube/wrongsecrets`
+10. Run `./build-and-deploy-aws.sh` to install all the required materials (helm for calico, secrets management, autoscaling, etc.)
 
 Your EKS cluster should be visible in [eu-west-1](https://eu-west-1.console.aws.amazon.com/eks/home?region=eu-west-1#/clusters) by default. Want a different region? You can modify `terraform.tfvars` or input it directly using the `region` variable in plan/apply.
 
@@ -158,9 +159,12 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_acm_balancer"></a> [acm\_balancer](#module\_acm\_balancer) | terraform-aws-modules/acm/aws | n/a |
+| <a name="module_acm_ctfd"></a> [acm\_ctfd](#module\_acm\_ctfd) | terraform-aws-modules/acm/aws | n/a |
 | <a name="module_cluster_autoscaler_irsa_role"></a> [cluster\_autoscaler\_irsa\_role](#module\_cluster\_autoscaler\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_ebs_csi_irsa_role"></a> [ebs\_csi\_irsa\_role](#module\_ebs\_csi\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 20.24.2 |
+| <a name="module_external_dns_irsa_role"></a> [external\_dns\_irsa\_role](#module\_external\_dns\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_load_balancer_controller_irsa_role"></a> [load\_balancer\_controller\_irsa\_role](#module\_load\_balancer\_controller\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.13.0 |
 
@@ -204,9 +208,12 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_balancer_domain_name"></a> [balancer\_domain\_name](#input\_balancer\_domain\_name) | The domain name to use | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The EKS cluster name | `string` | `"wrongsecrets-exercise-cluster"` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The EKS cluster version to use | `string` | `"1.30"` | no |
+| <a name="input_ctfd_domain_name"></a> [ctfd\_domain\_name](#input\_ctfd\_domain\_name) | The domain name to use | `string` | `""` | no |
 | <a name="input_extra_allowed_ip_ranges"></a> [extra\_allowed\_ip\_ranges](#input\_extra\_allowed\_ip\_ranges) | Allowed IP ranges in addition to creator IP | `list(string)` | `[]` | no |
+| <a name="input_hosted_zone_id"></a> [hosted\_zone\_id](#input\_hosted\_zone\_id) | The ID of the Route53 Hosted Zone to use | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region to use | `string` | `"eu-west-1"` | no |
 | <a name="input_state_bucket_arn"></a> [state\_bucket\_arn](#input\_state\_bucket\_arn) | ARN of the state bucket to grant access to the s3 user | `string` | n/a | yes |
 
@@ -214,14 +221,19 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Description |
 |------|-------------|
+| <a name="output_balancer_acm_cert_arn"></a> [balancer\_acm\_cert\_arn](#output\_balancer\_acm\_cert\_arn) | Balancer ACM certificate ARN |
+| <a name="output_balancer_domain_name"></a> [balancer\_domain\_name](#output\_balancer\_domain\_name) | Balancer domain name |
 | <a name="output_cluster_autoscaler_role"></a> [cluster\_autoscaler\_role](#output\_cluster\_autoscaler\_role) | Cluster autoscaler role |
 | <a name="output_cluster_autoscaler_role_arn"></a> [cluster\_autoscaler\_role\_arn](#output\_cluster\_autoscaler\_role\_arn) | Cluster autoscaler role arn |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for EKS control plane. |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The id of the cluster |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The EKS cluster name |
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | Security group ids attached to the cluster control plane. |
+| <a name="output_ctfd_acm_cert_arn"></a> [ctfd\_acm\_cert\_arn](#output\_ctfd\_acm\_cert\_arn) | CTFd ACM certificate ARN |
+| <a name="output_ctfd_domain_name"></a> [ctfd\_domain\_name](#output\_ctfd\_domain\_name) | CTFd domain name |
 | <a name="output_ebs_role"></a> [ebs\_role](#output\_ebs\_role) | EBS CSI driver role |
 | <a name="output_ebs_role_arn"></a> [ebs\_role\_arn](#output\_ebs\_role\_arn) | EBS CSI driver role |
+| <a name="output_external_dns_role_arn"></a> [external\_dns\_role\_arn](#output\_external\_dns\_role\_arn) | External DNS role |
 | <a name="output_irsa_role"></a> [irsa\_role](#output\_irsa\_role) | The role name used in the IRSA setup |
 | <a name="output_irsa_role_arn"></a> [irsa\_role\_arn](#output\_irsa\_role\_arn) | The role ARN used in the IRSA setup |
 | <a name="output_load_balancer_controller_role"></a> [load\_balancer\_controller\_role](#output\_load\_balancer\_controller\_role) | Load balancer controller role |

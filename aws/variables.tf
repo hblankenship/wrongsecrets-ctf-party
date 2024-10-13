@@ -3,6 +3,23 @@ variable "region" {
   type        = string
   default     = "eu-west-1"
 }
+variable "balancer_domain_name" {
+  description = "The domain name to use"
+  type        = string
+  default     = ""
+}
+
+variable "ctfd_domain_name" {
+  description = "The domain name to use"
+  type        = string
+  default     = ""
+}
+
+variable "hosted_zone_id" {
+  description = "The ID of the Route53 Hosted Zone to use"
+  type        = string
+  default     = ""
+}
 
 variable "cluster_version" {
   description = "The EKS cluster version to use"
