@@ -32,7 +32,7 @@ First, create an storage bucket:
 5. Run `terraform init`
 6. Run `terraform apply`.
 
-The bucket name should be in the output. Please use that to configure the Terraform backend in `main.tf`.
+The bucket name should be in the output. Please use that to configure the Terraform `gcs` backend in [`main.tf`](./main.tf).
 
 ## Installation
 
@@ -50,20 +50,8 @@ The bucket name should be in the output. Please use that to configure the Terraf
 6. Run `terraform plan`
 7. Run `terraform apply`. Note: the apply will take 10 to 20 minutes depending on the speed of the GCP backplane.
 8. Run `export USE_GKE_GCLOUD_AUTH_PLUGIN=True`
-9. When creation is done, run `gcloud container clusters get-credentials wrongsecrets-exercise-cluster --region YOUR_REGION`. Note if it errors on a missing plugin to support `kubectl`, then run `gcloud components install gke-gcloud-auth-plugin` and `gcloud container clusters get-credentials wrongsecrets-exercise-cluster`.
-10. Go to the values of the helm chart and replace the wrongsecrets.config with this:
-
-    ```yaml
-    K8S_ENV: "gcp"
-    ```
-
-    and replace the value of wrongsecrets.env having the name 'K8S_ENV' with this:
-
-    ```yaml
-    value: "gcp"
-    ```
-
-11. Run `./build-and-deploy-gcp.sh`
+9. When creation is done, run `gcloud container clusters get-credentials wrongsecrets-exercise-cluster --region YOUR_REGION`. Note if it errors on a missing plugin to support `kubectl`, then run `gcloud components install gke-gcloud-auth-plugin` and `gcloud container clusters get-credentials wrongsecrets-exercise-cluster --region YOUR_REGION`.
+10. Run `./build-and-deploy-gcp.sh`
 
 Your GKE cluster should be visible in [EU-West4](https://console.cloud.google.com/kubernetes?referrer=search&project=wrongsecrets) by default. Want a different region? You can modify `terraform.tfvars` or input it directly using the `region` variable in plan/apply.
 
@@ -87,7 +75,7 @@ You can use the [Juiceshop CTF CLI](https://github.com/juice-shop/juice-shop-ctf
 Follow the following steps:
 
 ```shell
-    npm install -g juice-shop-ctf-cli@9.1.2
+    npm install -g juice-shop-ctf-cli@10.0.1
     juice-shop-ctf #choose ctfd and https://wrongsecrets-ctf.herokuapp.com as domain. No trailing slash! The key is 'test', by default feel free to enable hints. We do not support snippets or links/urls to code or hints.
 ```
 
@@ -154,8 +142,8 @@ The documentation below is auto-generated to give insight on what's created via 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.1 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.4.0 |
-| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | ~> 5.4.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 6.5.0 |
+| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | ~> 6.5.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.4.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.5.1 |
 
@@ -163,9 +151,9 @@ The documentation below is auto-generated to give insight on what's created via 
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 5.4.0 |
-| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | 5.4.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.4.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.5.0 |
+| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | 6.5.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Modules
@@ -202,7 +190,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The GKE cluster name | `string` | `"wrongsecrets-exercise-cluster"` | no |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The GKE cluster version to use | `string` | `"1.28"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The GKE cluster version to use | `string` | `"1.30"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | project id | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The GCP region to use | `string` | `"eu-west4"` | no |
 

@@ -21,10 +21,10 @@ jobs:
       - name: Checkout git repository
         uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.9"
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Cache plugin dir
         with:
           path: ~/.tflint.d/plugins
@@ -50,7 +50,7 @@ jobs:
           tar -xvf helm-docs_${{env.HELM_DOCS_VERSION}}_Linux_x86_64.tar.gz
           sudo mv helm-docs /usr/local/sbin
       - name: Pre-commit checks
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
       - name: pre-commit-ci-lite
-        uses: pre-commit-ci/lite-action@v1.0.1
+        uses: pre-commit-ci/lite-action@v1.1.0
         if: always()

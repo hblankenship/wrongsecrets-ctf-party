@@ -150,8 +150,7 @@ async function deleteNamespaces(namespaceNames) {
       counts.successful.namespaces++;
     } catch (err) {
       counts.failed.namespaces++;
-      console.error(`Failed to delete namespace ${namespaceName}.`);
-      // console.error(err);
+      console.error(`Failed to delete namespace ${namespaceName}.`, err);
     }
   }
   return counts;

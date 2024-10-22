@@ -23,7 +23,7 @@ fi
 ACCOUNT_ID=$(aws sts get-caller-identity | jq '.Account' -r)
 echo "ACCOUNT_ID=${ACCOUNT_ID}"
 
-LBC_VERSION="v2.4.1"
+LBC_VERSION="v2.7.1"
 echo "LBC_VERSION=$LBC_VERSION"
 
 echo "setting up kubectl"
@@ -34,7 +34,7 @@ export KUBECONFIG=~/.kube/wrongsecrets
 
 echo "applying aws-lbc with kubectl"
 
-kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+# kubectl apply -k "https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml"
 
 kubectl get crd
 
@@ -71,25 +71,41 @@ sleep 10
 
 EKS_CLUSTER_VERSION=$(aws eks describe-cluster --name $CLUSTERNAME --region $AWS_REGION --query cluster.version --output text)
 
-# echo "apply -f k8s/secret-challenge-vault-service.yml in 10 s"
-# sleep 10
-# kubectl apply -f k8s/secret-challenge-vault-service.yml
-echo "apply -f k8s/wrongsecrets-balancer-service.yml in 10 s"
+EXTERNAL_DNS_ROLE_ARN="$(terraform output -raw external_dns_role_arn)"
+kubectl create serviceaccount -n kube-system external-dns
+kubectl annotate serviceaccount -n kube-system --overwrite external-dns eks.amazonaws.com/role-arn=${EXTERNAL_DNS_ROLE_ARN}
+
+echo "apply -f k8s/external-dns-*.yaml in 10 s"
 sleep 10
+kubectl apply -f k8s/external-dns-clusterrole.yaml
+kubectl apply -f k8s/external-dns-clusterrolebinding.yaml
+kubectl apply -f k8s/external-dns-deployment.yaml
+
+
+echo "apply -f k8s/wrongsecrets-balancer-service.yml"
 kubectl apply -f k8s/wrongsecrets-balancer-service.yml
-# echo "apply -f k8s/secret-challenge-vault-ingress.yml in 1 s"
-# sleep 1
-# kubectl apply -f k8s/secret-challenge-vault-ingress.yml
-echo "apply -f k8s/wrongsecrets-balancer-ingress.yml in 10 s"
-sleep 10
+
+export BALANCER_DOMAIN_NAME="$(terraform output -raw balancer_domain_name)"
+
+envsubst <./k8s/wrongsecrets-balancer-ingress.yml.tpl >./k8s/wrongsecrets-balancer-ingress.yml
+
+echo "apply -f k8s/wrongsecrets-balancer-ingress.yml"
 kubectl apply -f k8s/wrongsecrets-balancer-ingress.yml
 
+echo "apply -f k8s/ctfd-service.yaml"
 kubectl apply -f k8s/ctfd-service.yaml
+
+export CTFD_DOMAIN_NAME="$(terraform output -raw ctfd_domain_name)"
+envsubst <./k8s/ctfd-ingress.yaml.tpl >./k8s/ctfd-ingress.yaml
+
+echo "apply -f k8s/ctfd-ingress.yaml"
 kubectl apply -f k8s/ctfd-ingress.yaml
 
-echo "waiting 10 s for loadBalancer"
-sleep 10
+echo "waiting 20 s for load balancer"
+sleep 20
 echo "Wrongsecrets ingress: http://$(kubectl get ingress wrongsecrets-balancer -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+echo "Wrongsecrets host: http://$(kubectl get ingress wrongsecrets-balancer -o jsonpath='{.spec.rules[0].host}')"
 echo "ctfd ingress: http://$(kubectl get ingress -n ctfd ctfd -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+echo "ctfd host: http://$(kubectl get ingress -n ctfd ctfd -o jsonpath='{.spec.rules[0].host}')"
 
 echo "Do not forget to cleanup afterwards! Run k8s-aws-alb-script-cleanup.sh"

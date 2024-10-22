@@ -113,6 +113,8 @@ async function validateHMAC(req, res, next) {
     }
     res.status(403).send({ message: 'Invalid validation, please stop doing this!' });
   } catch (error) {
+    logger.warn('invalid hmac provided;');
+    logger.warn(JSON.stringify(error));
     res.status(500).send({ message: 'Invalid validation, please stop doing this!' });
   }
 }
@@ -141,6 +143,8 @@ async function validatePassword(req, res, next) {
       }
     }
   } catch (error) {
+    logger.warn('error duing password validation');
+    logger.warn(JSON.stringify(error));
     res
       .status(500)
       .send({ message: 'Go home pizzaboy! https://www.youtube.com/watch?v=qyTj4WnPE9M' });
@@ -295,7 +299,7 @@ async function createTeam(req, res) {
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
   try {
-    logger.info(`Creating WrongSecrets Deployment for team '${team}'`);
+    logger.info(`Creating WrongSecrets Deployment for team '${team}' with k8s (no cloud)`);
     await createK8sDeploymentForTeam({ team, passcodeHash: hash });
     await createServiceForTeam(team);
   } catch (error) {
@@ -420,7 +424,7 @@ async function createAWSTeam(req, res) {
   }
 
   try {
-    logger.info(`Creating WrongSecrets Deployment for team '${team}'`);
+    logger.info(`Creating WrongSecrets Deployment for team '${team}' with AWS`);
     await createAWSDeploymentForTeam({ team, passcodeHash: hash });
     await createServiceForTeam(team);
   } catch (error) {
@@ -499,7 +503,9 @@ async function createAWSTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team}: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on AWS: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }
@@ -540,7 +546,7 @@ async function createAzureTeam(req, res) {
   }
 
   try {
-    logger.info(`Creating WrongSecrets Deployment for team '${team}'`);
+    logger.info(`Creating WrongSecrets Deployment for team '${team}' with Azure`);
     await createAzureDeploymentForTeam({ team, passcodeHash: hash });
     await createServiceForTeam(team);
   } catch (error) {
@@ -619,7 +625,9 @@ async function createAzureTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team}: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on Azure: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }
@@ -686,7 +694,7 @@ async function createGCPTeam(req, res) {
   }
 
   try {
-    logger.info(`Creating WrongSecrets Deployment for team '${team}'`);
+    logger.info(`Creating WrongSecrets Deployment for team '${team}' with GCP`);
     await createGCPDeploymentForTeam({ team, passcodeHash: hash });
     await createServiceForTeam(team);
   } catch (error) {
@@ -765,7 +773,9 @@ async function createGCPTeam(req, res) {
         passcode,
       });
   } catch (error) {
-    logger.error(`Error while creating deployment or service for team ${team}: ${error.message}`);
+    logger.error(
+      `Error while creating deployment or service for team ${team} on GCP: ${error.message}`
+    );
     res.status(500).send({ message: 'Failed to Create Instance' });
   }
 }

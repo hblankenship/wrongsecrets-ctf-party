@@ -37,7 +37,7 @@ data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.1.1"
+  version = "~> 5.13.0"
 
   name                 = "${var.cluster_name}-vpc"
   cidr                 = local.vpc_cidr
@@ -62,7 +62,7 @@ module "vpc" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.18.0"
+  version = "20.24.2"
 
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
@@ -74,7 +74,16 @@ module "eks" {
     aws-ebs-csi-driver = {
       most_recent              = true
       service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+      configuration_values = jsonencode({
+        defaultStorageClass = {
+          enabled = true
+        }
+      })
     }
+  }
+
+  cluster_upgrade_policy = {
+    support_type = "STANDARD"
   }
 
 
@@ -85,34 +94,47 @@ module "eks" {
 
   enable_irsa = true
 
+  enable_cluster_creator_admin_permissions = true
+
   create_cloudwatch_log_group            = true
   cluster_enabled_log_types              = ["api", "audit", "authenticator"]
-  cloudwatch_log_group_retention_in_days = 14 #it's a ctf , we don't need non-necessary costs!
+  cloudwatch_log_group_retention_in_days = 14 #it's a ctf , we don't need unnecessary costs!
 
   # apply when available: iam_role_permissions_boundary = "arn:aws:iam::${local.account_id}:policy/service-user-creation-permission-boundary"
   eks_managed_node_group_defaults = {
-    disk_size       = 256
-    disk_type       = "gp3"
-    disk_throughput = 150
-    disk_iops       = 3000
-    instance_types  = ["t3a.medium"]
+    instance_types = ["m5a.xlarge"]
+    block_device_mappings = [
+      {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 200
+          volume_type           = "gp3"
+          iops                  = 3000
+          throughput            = 150
+          delete_on_termination = true
+        }
+      }
+    ]
+    metadata_options = {
+      http_tokens = "required",
+    }
 
     iam_role_additional_policies = {
       AmazonEKSWorkerNodePolicy : "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
       AmazonEKS_CNI_Policy : "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
       AmazonEC2ContainerRegistryReadOnly : "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
       AmazonSSMManagedInstanceCore : "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-      AmazonEKSVPCResourceController : "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+      AmazonEKSVPCResourceController : "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+      AmazonEBSCSIDriverPolicy : "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
     }
   }
 
   eks_managed_node_groups = {
     bottlerocket_default = {
-      use_custom_launch_template = false
-      min_size                   = 3
-      max_size                   = 50
-      desired_size               = 3
-
+      name          = "wrongsecrets-ctf"
+      min_size      = 3
+      max_size      = 50
+      desired_size  = 3
       capacity_type = "ON_DEMAND"
 
       ami_type = "BOTTLEROCKET_x86_64"
@@ -142,7 +164,7 @@ module "eks" {
 # Cluster Autoscaler IRSA
 module "cluster_autoscaler_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.30.0"
+  version = "~> 5.46"
 
 
   role_name                        = "wrongsecrets-cluster-autoscaler"
@@ -159,7 +181,7 @@ module "cluster_autoscaler_irsa_role" {
 
 module "ebs_csi_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.30.0"
+  version = "~> 5.46"
 
   role_name             = "wrongsecrets-ebs-csi"
   attach_ebs_csi_policy = true
@@ -174,7 +196,7 @@ module "ebs_csi_irsa_role" {
 
 module "load_balancer_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.30.0"
+  version = "~> 5.46"
 
   role_name                              = "wrongsecrets-load-balancer-controller"
   attach_load_balancer_controller_policy = true
@@ -183,6 +205,21 @@ module "load_balancer_controller_irsa_role" {
     main = {
       provider_arn               = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
+    }
+  }
+}
+
+module "external_dns_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.46"
+
+  role_name                  = "external-dns"
+  attach_external_dns_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:external-dns"]
     }
   }
 }

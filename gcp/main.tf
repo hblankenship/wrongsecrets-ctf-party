@@ -3,7 +3,7 @@ terraform {
   # Set the resource group in the backend configuration below, then uncomment and apply!
   # Note that you probably already create a resource group. Don't forget to set that correctly in this file.
   backend "gcs" {
-    bucket = ""
+    bucket = "tfstate-wrongsecrets-93ac22f5"
     prefix = "terraform/state"
   }
 }
@@ -32,6 +32,8 @@ resource "google_container_cluster" "gke" {
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.node_subnet.name
+
+  deletion_protection = false
 
   workload_identity_config {
     workload_pool = "${var.project_id}.svc.id.goog"

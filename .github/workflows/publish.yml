@@ -58,7 +58,7 @@ jobs:
       - name: Get back to original branch
         uses: actions/checkout@v4
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
+        uses: helm/chart-releaser-action@v1.6.0
         with:
           charts_dir: helm
         env:
@@ -95,7 +95,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./${{ matrix.component }}
           file: ./${{ matrix.component }}/Dockerfile

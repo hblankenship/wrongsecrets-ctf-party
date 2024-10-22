@@ -32,6 +32,7 @@ esac
 
 echo "This is a script to bootstrap the configuration. You need to have installed: helm, kubectl, vault, grep, cat, sed, envsubst, and azure cli, and is only tested on mac, Debian and Ubuntu"
 
+echo "obtaining the shared state locally, if you use shared state you will see an error below, there is no problem in that case"
 # The storage account to store the terraform state file
 export AZ_STORAGE_ACCOUNT="$(terraform -chdir=./shared-state output -raw storage_account_name)"
 
@@ -152,6 +153,7 @@ echo "You can find the app password in password.txt"
 
 helm upgrade --install wrongsecrets ../helm/wrongsecrets-ctf-party \
   --set="balancer.env.K8S_ENV=azure" \
+  --set="balancer.tag=1.9.2-cloud" \
   --set="balancer.env.REACT_APP_AZ_BLOB_URL=https://${AZ_STORAGE_ACCOUNT}.blob.core.windows.net/tfstate" \
   --set="balancer.env.REACT_APP_ACCESS_PASSWORD=${APP_PASSWORD}" \
   --set="balancer.env.REACT_APP_CREATE_TEAM_HMAC_KEY=${CREATE_TEAM_HMAC}" \
@@ -168,7 +170,7 @@ export HELM_EXPERIMENTAL_OCI=1
 kubectl create namespace ctfd
 
 # Double base64 encoding to prevent weird character errors in ctfd
-helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --version 0.6.3 \
+helm upgrade --install ctfd -n ctfd oci://ghcr.io/bman46/ctfd/ctfd --version v0.9.3 \
   --values ./k8s/ctfd-values.yaml \
   --set="redis.auth.password=$(openssl rand -base64 24 | base64)" \
   --set="mariadb.auth.rootPassword=$(openssl rand -base64 24 | base64)" \
