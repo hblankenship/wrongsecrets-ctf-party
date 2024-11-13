@@ -2,6 +2,10 @@ const express = require('express');
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
+const yaml = require('js-yaml');
+
+const configMapPath = '/etc/config/proxy-config.yaml';
 
 const { get, extractTeamName } = require('../config');
 const { logger } = require('../logger');
@@ -11,6 +15,21 @@ const {
 } = require('../kubernetes');
 
 const router = express.Router();
+
+// Load ConfigMap data
+let websocketConfig, proxyConfig;
+try {
+  const configFile = fs.readFileSync(configMapPath, 'utf8');
+  const configData = yaml.load(configFile);
+  websocketConfig = configData.websocket;
+  proxyConfig = configData.proxy;
+  console.log('Loaded ConfigMap data:');
+  console.log('WebSocket Config:', websocketConfig);
+  console.log('Proxy Config:', proxyConfig);
+} catch (error) {
+  console.error('Error loading ConfigMap data:', error);
+  process.exit(1);
+}
 
 /**
  * @param {import("express").Request} req
@@ -100,94 +119,59 @@ async function updateLastConnectTimestamp(req, res, next) {
 }
 
 /**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
+ * @param {Express.Request} req
+ * @param {Express.Response} res
  */
 function proxyTrafficToJuiceShop(req, res) {
   const teamname = req.teamname;
-  const regex = new RegExp('^[a-z0-9-]+$');
-  if (!regex.test(teamname)) {
-    logger.info(`Got malformed teamname: ${teamname}s`);
-    return res.redirect('/balancer/');
-  }
-  const currentReferrerForDesktop = '/?desktop';
-  logger.debug(
-    `Proxying request ${req.method.toLocaleUpperCase()} ${
-      req.path
-    } with matcher for referer: ${currentReferrerForDesktop}`
-  );
-  let target;
-  if (
-    (req.query != null && req.query.desktop != null) ||
-    (req.headers['referer'] !== undefined &&
-      req.headers['referer'].includes(currentReferrerForDesktop)) ||
-    (req.headers['Referer'] !== undefined &&
-      req.headers['Referer'].includes(currentReferrerForDesktop)) ||
-    req.path === '/js/filebrowser.js' ||
-    req.path === '/css/filebrowser.css' ||
-    req.path === '/files/socket.io/socket.io.js' ||
-    req.path === '/js/vendor/jquery.min.js' ||
-    req.path === '/files/socket.io/' ||
-    req.path === '/files/socket.io/socket.io.js.map'
-  ) {
-    target = {
-      target: `http://${teamname}-virtualdesktop.${teamname}.svc:8080`,
-      ws: true,
-    };
-  } else {
-    target = {
-      target: `http://${teamname}-wrongsecrets.${teamname}.svc:8080`,
-      ws: true,
-    };
-  }
-  logger.info(`we got ${teamname} requesting ${target.target}`);
+  const url = req.url;
 
-  if (req.path === '/guaclite') {
-    let server = res.socket.server;
-    logger.info('putting ws through for /quaclite');
-    server.on('upgrade', function (req, socket, head) {
-      cookieParser(get('cookieParser.secret'))(req, null, () => {});
+  // Check ConfigMap data for proxying decisions
+  const websocketTarget = getWebSocketTarget(teamname, url, websocketConfig);
+  const proxyTarget = getProxyTarget(teamname, url, proxyConfig);
 
-      // logger.info(
-      //   `we have cookies: ${JSON.stringify(req.cookies)} and  ${JSON.stringify(req.signedCookies)}`
-      // );
-      const upgradeTeamname = extractTeamName(req);
-      const regex = new RegExp('^[a-z0-9]([-a-z0-9])+[a-z0-9]$', 'i');
-      if (!regex.test(upgradeTeamname)) {
-        logger.info(`Got malformed teamname: ${upgradeTeamname}s`);
-        return res.redirect('/balancer/');
-      }
-      logger.info(`proxying upgrade request for: ${req.url} with team ${upgradeTeamname}`);
-      proxy.ws(req, socket, head, {
-        target: `ws://${upgradeTeamname}-virtualdesktop.${upgradeTeamname}.svc:8080`,
-        ws: true,
-      });
+  if (websocketTarget) {
+    logger.info(`Proxying WebSocket request to ${websocketTarget.target}`);
+    proxy.ws(req, res, {
+      target: websocketTarget.target,
+      ws: true,
     });
-    server.on('connect', function (req, socket, head) {
-      const connectTeamname = extractTeamName(req);
-      const regex = new RegExp('^[a-z0-9]([-a-z0-9])+[a-z0-9]$', 'i');
-      if (!regex.test(connectTeamname)) {
-        logger.info(`Got malformed teamname: ${teamname}s`);
-        return res.redirect('/balancer/');
-      }
-      logger.info(`proxying upgrade request for: ${req.url} with team ${connectTeamname}`);
-      proxy.ws(req, socket, head, {
-        target: `ws://${connectTeamname}-virtualdesktop.${connectTeamname}.svc:8080`,
-        ws: true,
-      });
-    });
-  } else {
-    proxy.web(req, res, target, (error) => {
+  } else if (proxyTarget) {
+    logger.info(`Proxying request to ${proxyTarget.target}`);
+    proxy.web(req, res, {
+      target: proxyTarget.target,
+      ws: true,
+    }, (error) => {
       logger.warn(`Proxy fail '${error.code}' for: ${req.method.toLocaleUpperCase()} ${req.path}`);
-
       if (error.code !== 'ENOTFOUND' && error.code !== 'EHOSTUNREACH') {
         logger.error(error.message);
       } else {
         logger.debug(error.message);
       }
     });
+  } else {
+    logger.warn(`No proxy target found for ${teamname} and URL ${url}`);
+    res.status(404).send('Not Found');
   }
+}
+
+// Helper functions to get proxy targets from ConfigMap data
+function getWebSocketTarget(teamname, url, websocketConfig) {
+  for (const [target, urls] of Object.entries(websocketConfig)) {
+    if (urls.includes(url)) {
+      return { target: `http://${teamname}-${target.split(':')[0]}.${teamname}.svc:${target.split(':')[1]}` };
+    }
+  }
+  return null;
+}
+
+function getProxyTarget(teamname, url, proxyConfig) {
+  for (const [target, urls] of Object.entries(proxyConfig)) {
+    if (urls.some((u) => url.match(u))) {
+      return { target: `http://${teamname}-${target.split(':')[0]}.${teamname}.svc:${target.split(':')[1]}` };
+    }
+  }
+  return null;
 }
 
 router.use(

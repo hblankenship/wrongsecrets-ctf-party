@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+data:
+  proxy-config.yaml: |
+    websocket:
+      servicename1:8080:
+        - /guaclite
+        - /files/socket.io/
+      servicename2:3000:
+        - /another-path
+    proxy:
+      servicename1:8080:
+        - /path1
+        - /path2
+      servicename2:3000:
+        - /another-path
