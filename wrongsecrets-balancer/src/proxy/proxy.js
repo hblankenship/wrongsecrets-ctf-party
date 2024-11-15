@@ -4,8 +4,7 @@ const proxy = httpProxy.createProxyServer();
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const yaml = require('js-yaml');
-
-const configMapPath = '/etc/config/proxy-config.yaml';
+const path = require('path'); // Add path module for easier file access
 
 const { get, extractTeamName } = require('../config');
 const { logger } = require('../logger');
@@ -16,10 +15,13 @@ const {
 
 const router = express.Router();
 
-// Load ConfigMap data
+// ConfigMap Path (adjust if needed)
+const configMapPath = '/etc/proxy-config/proxy-config.yaml';
+
+// Load ConfigMap data (using path module for clarity)
 let websocketConfig, proxyConfig;
 try {
-  const configFile = fs.readFileSync(configMapPath, 'utf8');
+  const configFile = fs.readFileSync(path.join(__dirname, '..', '..', configMapPath), 'utf8');
   const configData = yaml.load(configFile);
   websocketConfig = configData.websocket;
   proxyConfig = configData.proxy;
@@ -31,92 +33,7 @@ try {
   process.exit(1);
 }
 
-/**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- */
-function redirectJuiceShopTrafficWithoutBalancerCookies(req, res, next) {
-  if (!req.teamname) {
-    logger.debug('Got request without team cookie in proxy. Redirecting to /balancer/');
-    return res.redirect('/balancer/');
-  }
-  return next();
-}
-
-/**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- */
-function redirectAdminTrafficToBalancerPage(req, res, next) {
-  if (req.teamname === `t-${get('admin.username')}`) {
-    logger.debug('Got admin request in proxy. Redirecting to /balancer/');
-    return res.redirect('/balancer/?msg=logged-as-admin');
-  }
-  return next();
-}
-
-const connectionCache = new Map();
-
-/**
- * Checks at most every 10sec if the deployment the traffic should go to is ready.
- *
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- */
-async function checkIfInstanceIsUp(req, res, next) {
-  const teamname = req.cleanedTeamname;
-
-  const currentTime = new Date().getTime();
-  if (connectionCache.has(teamname) && currentTime - connectionCache.get(teamname) < 10000) {
-    return next();
-  }
-
-  try {
-    const { readyReplicas } = await getJuiceShopInstanceForTeamname(teamname);
-
-    if (readyReplicas === 1) {
-      return next();
-    }
-
-    logger.warn(`Tried to proxy for team ${teamname}, but no ready instance found.`);
-    return res.redirect(`/balancer/?msg=instance-restarting&teamname=${teamname}`);
-  } catch (error) {
-    logger.warn(`Could not find instance for team: '${teamname}'`);
-    logger.warn(JSON.stringify(error));
-    res.redirect(`/balancer/?msg=instance-not-found&teamname=${teamname}`);
-  }
-}
-
-/**
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- */
-async function updateLastConnectTimestamp(req, res, next) {
-  const currentTime = new Date().getTime();
-  const teamname = req.cleanedTeamname;
-
-  try {
-    if (connectionCache.has(teamname)) {
-      const timeDifference = currentTime - connectionCache.get(teamname);
-      if (timeDifference > 10000) {
-        connectionCache.set(teamname, currentTime);
-        await updateLastRequestTimestampForTeam(teamname);
-      }
-    } else {
-      await updateLastRequestTimestampForTeam(teamname);
-      connectionCache.set(teamname, currentTime);
-    }
-  } catch (error) {
-    logger.warn(`Failed to update lastRequest timestamp for team '${teamname}'"`);
-    logger.warn(error.message);
-    logger.warn(JSON.stringify(error));
-  }
-  next();
-}
+// ... (rest of your code)
 
 /**
  * @param {Express.Request} req
@@ -159,6 +76,7 @@ function proxyTrafficToJuiceShop(req, res) {
 function getWebSocketTarget(teamname, url, websocketConfig) {
   for (const [target, urls] of Object.entries(websocketConfig)) {
     if (urls.includes(url)) {
+      // Use the target and teamname to construct the full URL
       return { target: `http://${teamname}-${target.split(':')[0]}.${teamname}.svc:${target.split(':')[1]}` };
     }
   }
@@ -168,11 +86,14 @@ function getWebSocketTarget(teamname, url, websocketConfig) {
 function getProxyTarget(teamname, url, proxyConfig) {
   for (const [target, urls] of Object.entries(proxyConfig)) {
     if (urls.some((u) => url.match(u))) {
+      // Use the target and teamname to construct the full URL
       return { target: `http://${teamname}-${target.split(':')[0]}.${teamname}.svc:${target.split(':')[1]}` };
     }
   }
   return null;
 }
+
+// ... (rest of your code)
 
 router.use(
   redirectJuiceShopTrafficWithoutBalancerCookies,

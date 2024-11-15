@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+data:
+  # Example, adjust according to your needs
+  websocket: |
+    servicename1:8080:
+      incomingurl1
+      incomingurl2
+      incomingurl3
+    servicename2:3000
+      incomingurl4
+      incomingurl5
+  proxy: |
+    servicename1:8080:
+      incomingurl6
+      incomingurl7
+    servicename2:3000:
+      incomingurl8withwildcard
+    servicename3(CTFD):
+      incomingurl9
+      incomingurl10
+    servicename4(grafana):
+      incomingurl11
