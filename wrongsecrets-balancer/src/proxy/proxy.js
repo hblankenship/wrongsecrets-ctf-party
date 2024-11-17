@@ -48,24 +48,25 @@ function proxyTrafficToJuiceShop(req, res) {
     );
   } else if (proxyTarget) {
     logger.info(`Proxying request to ${proxyTarget.target}`);
-    proxy.web(
-      req,
-      res,
-      {
-        target: proxyTarget.target,
-        ws: true,
-      },
-      (error) => {
-        logger.warn(
-          `Proxy fail '${error.code}' for: ${req.method.toLocaleUpperCase()} ${req.path}`
-        );
-        if (error.code !== 'ENOTFOUND' && error.code !== 'EHOSTUNREACH') {
-          logger.error(error.message);
-        } else {
-          logger.debug(error.message);
-        }
+  proxy.web(
+    req,
+    res,
+    {
+      target: proxyTarget.target,
+      ws: true,
+    },
+    (error) => {
+      logger.warn(
+        `Proxy fail '${error.code}' for: ${req.method.toLocaleUpperCase()} ${req.path}`
+      );
+      if (error.code !== 'ENOTFOUND' && error.code !== 'EHOSTUNREACH') {
+        logger.error(error.message);
+      } else {
+        logger.debug(error.message);
       }
-    );
+    }
+  );
+
   } else {
     logger.warn(`No proxy target found for ${teamname} and URL ${url}`);
     res.status(404).send('Not Found');
