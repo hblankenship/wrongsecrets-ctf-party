@@ -34,5 +34,32 @@ data:
         "affinity": {{ .Values.wrongsecrets.affinity | toJson }},
         "tolerations": {{ .Values.wrongsecrets.tolerations | toJson }},
         "runtimeClassName": {{ .Values.wrongsecrets.runtimeClassName | toJson }}
+      },
+      "websocket": {
+        "servicename1:8080": [
+          "incomingurl1",
+          "incomingurl2",
+          "incomingurl3"
+        ],
+        "serviname2:3000": [
+          "incomingurl4",
+          "incomingurl5"
+        ]
+      },
+      "proxy": {
+        "servicename1:8080": [
+          "incomingurl6",
+          "incomingurl7"
+        ],
+        "servicename2:3000": [
+          "incomingurl8withwildcard"
+        ],
+        "servicename3(CTFD)": [
+          "incomingurl9",
+          "incomingurl10"
+        ],
+        "servicename4(grafana)": [
+          "incomingurl10"
+        ]
       }
     }

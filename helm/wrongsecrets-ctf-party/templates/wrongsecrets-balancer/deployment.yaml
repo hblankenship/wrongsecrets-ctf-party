@@ -62,15 +62,17 @@ spec:
           securityContext:
             {{- omit .Values.balancer.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          {{- if .Values.balancer.volumeMounts }}
           volumeMounts:
-            {{- toYaml .Values.balancer.volumeMounts | nindent 12 }}
-          {{- end }}
+            - name: proxy-config
+              mountPath: /etc/config
           resources:
             {{- toYaml .Values.balancer.resources | nindent 12 }}
+          volumes:
+            - name: proxy-config
+              configMap:
+                name: proxy-config
       {{- if .Values.balancer.volumes }}
-      volumes:
-        {{- toYaml .Values.balancer.volumes | nindent 8 }}
+      {{- toYaml .Values.balancer.volumes | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
