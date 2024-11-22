@@ -136,30 +136,7 @@ Note that you might have to do some manual cleanups after that.
 
 The documentation below is auto-generated to give insight on what's created via Terraform.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.1 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 6.5.0 |
-| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | ~> 6.5.0 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.4.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.5.1 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 6.5.0 |
-| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | 6.5.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
-
-## Modules
-
-No modules.
-
+<!-- BEGIN_TF_DOCS -->
 ## Resources
 
 | Name | Type |
@@ -203,4 +180,50 @@ No modules.
 | <a name="output_kubernetes_cluster_name"></a> [kubernetes\_cluster\_name](#output\_kubernetes\_cluster\_name) | GKE Cluster Name |
 | <a name="output_project_id"></a> [project\_id](#output\_project\_id) | GCloud Project ID |
 | <a name="output_region"></a> [region](#output\_region) | GCloud Region |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
+
+<!-- BEGIN_TF_DOCS -->
+## Resources
+
+| Name | Type |
+|------|------|
+| [google-beta_google_iam_workload_identity_pool.pool](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_iam_workload_identity_pool) | resource |
+| [google_compute_network.vpc](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network) | resource |
+| [google_compute_subnetwork.master_subnet](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork) | resource |
+| [google_compute_subnetwork.node_subnet](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork) | resource |
+| [google_container_cluster.gke](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster) | resource |
+| [google_project_iam_member.wrongsecrets_cluster_sa_roles](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
+| [google_project_iam_member.wrongsecrets_workload_sa_roles](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
+| [google_secret_manager_secret.wrongsecret_1](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret) | resource |
+| [google_secret_manager_secret.wrongsecret_2](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret) | resource |
+| [google_secret_manager_secret.wrongsecret_3](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret) | resource |
+| [google_secret_manager_secret_iam_member.wrongsecret_1_member](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
+| [google_secret_manager_secret_iam_member.wrongsecret_2_member](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
+| [google_secret_manager_secret_iam_member.wrongsecret_3_member](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
+| [google_secret_manager_secret_version.secret_version_basic](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_version) | resource |
+| [google_service_account.wrongsecrets_cluster](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
+| [google_service_account.wrongsecrets_workload](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
+| [google_service_account_iam_member.wrongsecret_wrong_pod_sa](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_iam_member) | resource |
+| [random_integer.int](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) | resource |
+| [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [http_http.ip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The GKE cluster name | `string` | `"wrongsecrets-exercise-cluster"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The GKE cluster version to use | `string` | `"1.30"` | no |
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | project id | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | The GCP region to use | `string` | `"eu-west4"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_gke_config"></a> [gke\_config](#output\_gke\_config) | config string for the cluster credentials |
+| <a name="output_kubernetes_cluster_host"></a> [kubernetes\_cluster\_host](#output\_kubernetes\_cluster\_host) | GKE Cluster Host |
+| <a name="output_kubernetes_cluster_name"></a> [kubernetes\_cluster\_name](#output\_kubernetes\_cluster\_name) | GKE Cluster Name |
+| <a name="output_project_id"></a> [project\_id](#output\_project\_id) | GCloud Project ID |
+| <a name="output_region"></a> [region](#output\_region) | GCloud Region |
+<!-- END_TF_DOCS -->
