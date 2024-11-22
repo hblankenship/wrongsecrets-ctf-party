@@ -145,9 +145,54 @@ Note that you might have to do some manual cleanups after that.
 
 The documentation below is auto-generated to give insight on what's created via Terraform.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-README.md updated successfully
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
+## Resources
+
+| Name | Type |
+|------|------|
+| [azurerm_key_vault.vault](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault) | resource |
+| [azurerm_key_vault_access_policy.extra_identity_access](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_access_policy) | resource |
+| [azurerm_key_vault_access_policy.identity_access](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_access_policy) | resource |
+| [azurerm_key_vault_access_policy.user](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_access_policy) | resource |
+| [azurerm_key_vault_secret.wrongsecret_1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
+| [azurerm_key_vault_secret.wrongsecret_2](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
+| [azurerm_key_vault_secret.wrongsecret_3](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_secret) | resource |
+| [azurerm_kubernetes_cluster.cluster](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster) | resource |
+| [azurerm_resource_group.default](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_role_assignment.aks_extra_identity_operator](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_role_assignment.aks_identity_operator](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_role_assignment.aks_vm_contributor](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
+| [azurerm_user_assigned_identity.aks_extra_pod_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [azurerm_user_assigned_identity.aks_pod_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
+| [random_integer.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/integer) | resource |
+| [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
+| [http_http.ip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The AKS cluster name | `string` | `"wrongsecrets-exercise-cluster"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The AKS cluster version to use | `string` | `"1.30"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The Azure region to use | `string` | `"East US"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_aad_extra_pod_identity_client_id"></a> [aad\_extra\_pod\_identity\_client\_id](#output\_aad\_extra\_pod\_identity\_client\_id) | Client ID for the Managed Identity for AAD Pod Identity |
+| <a name="output_aad_extra_pod_identity_resource_id"></a> [aad\_extra\_pod\_identity\_resource\_id](#output\_aad\_extra\_pod\_identity\_resource\_id) | Resource ID for the Managed Identity for AAD Pod Identity |
+| <a name="output_aad_pod_identity_client_id"></a> [aad\_pod\_identity\_client\_id](#output\_aad\_pod\_identity\_client\_id) | Client ID for the Managed Identity for AAD Pod Identity |
+| <a name="output_aad_pod_identity_resource_id"></a> [aad\_pod\_identity\_resource\_id](#output\_aad\_pod\_identity\_resource\_id) | Resource ID for the Managed Identity for AAD Pod Identity |
+| <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | AKS Cluster name |
+| <a name="output_key_vault_url"></a> [key\_vault\_url](#output\_key\_vault\_url) | Azure KeyVault URI for the Demo Container |
+| <a name="output_resource_group"></a> [resource\_group](#output\_resource\_group) | Resource group name |
+| <a name="output_tenant_id"></a> [tenant\_id](#output\_tenant\_id) | Azure tenant ID |
+| <a name="output_vault_name"></a> [vault\_name](#output\_vault\_name) | Vault name |
+| <a name="output_vault_uri"></a> [vault\_uri](#output\_vault\_uri) | Vault URI |
+<!-- END_TF_DOCS -->
 
 <!-- BEGIN_TF_DOCS -->
 ## Resources
