@@ -1,123 +1,79 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "reviewers": [
-        "commjoen",
-        "bendehaan"
-    ],
-    "schedule": [
-        "* * 1,15 * *"
-    ],
-    "extends": [
-        "config:recommended",
-        ":enablePreCommit"
-    ],
-    "labels": [
-        "renovate",
-        "dependencies"
-    ],
-    "customManagers": [
-        {
-            "customType": "regex",
-            "fileMatch": ".github/workflows/pre-commit.yml",
-            "depNameTemplate": "terraform-docs/terraform-docs",
-            "matchStrings": [
-                "TF_DOCS_VERSION=\"(?<currentValue>.*?)\""
-            ],
-            "datasourceTemplate": "github-releases"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": ".github/workflows/pre-commit.yml",
-            "depNameTemplate": "aquasecurity/tfsec",
-            "matchStrings": [
-                "TFSEC_VERSION=\"(?<currentValue>.*?)\""
-            ],
-            "datasourceTemplate": "github-releases"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": ".github/workflows/pre-commit.yml",
-            "depNameTemplate": "terraform-linters/tflint",
-            "matchStrings": [
-                "TFLINT_VERSION=\"(?<currentValue>.*?)\""
-            ],
-            "datasourceTemplate": "github-releases"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": ".github/scripts/docker-create.sh",
-            "depNameTemplate": "OWASP/wrongsecrets-binaries",
-            "matchStrings": [
-                "BINARY_VERSION=\"(?<currentValue>.*?)\""
-            ],
-            "datasourceTemplate": "github-releases"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": "aws/k8s-aws-alb-script.sh",
-            "depNameTemplate": "kubernetes-sigs/aws-alb-ingress-controller",
-            "matchStrings": [
-                "LBC_VERSION=\"(?<currentValue>.*?)\""
-            ],
-            "datasourceTemplate": "github-releases"
-        }
-    ],
-    "packageRules": [
-        {
-            "groupName": "eslint",
-            "enabled": true,
-            "matchPackageNames": [
-                "/^eslint/"
-            ]
-        },
-        {
-            "groupName": "go",
-            "matchDatasources": [
-                "go"
-            ],
-            "enabled": true
-        },
-        {
-            "groupName": "pre-commit",
-            "matchFileNames": [
-                ".pre-commit-config.yaml"
-            ],
-            "enabled": true
-        },
-        {
-            "groupName": "terraform-aws",
-            "matchDatasources": [
-                "terraform-provider",
-                "terraform-module"
-            ],
-            "enabled": true,
-            "matchPackageNames": [
-                "/aws/",
-                "/terraform-aws-modules/.*/"
-            ]
-        },
-        {
-            "groupName": "terraform-azure",
-            "matchDatasources": [
-                "terraform-provider",
-                "terraform-module"
-            ],
-            "enabled": true,
-            "matchPackageNames": [
-                "/azurerm/"
-            ]
-        },
-        {
-            "groupName": "terraform-gcp",
-            "matchDatasources": [
-                "terraform-provider",
-                "terraform-module"
-            ],
-            "enabled": true,
-            "matchPackageNames": [
-                "/google/",
-                "/google-beta/"
-            ]
-        }
-    ]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "reviewers": ["commjoen", "bendehaan"],
+  "schedule": ["* * 1,15 * *"],
+  "extends": ["config:recommended", ":enablePreCommit"],
+  "labels": ["renovate", "dependencies"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ".github/workflows/pre-commit.yml",
+      "depNameTemplate": "terraform-docs/terraform-docs",
+      "matchStrings": ["TF_DOCS_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ".github/workflows/pre-commit.yml",
+      "depNameTemplate": "aquasecurity/tfsec",
+      "matchStrings": ["TFSEC_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ".github/workflows/pre-commit.yml",
+      "depNameTemplate": "terraform-linters/tflint",
+      "matchStrings": ["TFLINT_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ".github/workflows/pre-commit.yml",
+      "depNameTemplate": "norwoodj/helm-docs",
+      "matchStrings": ["HELM_DOCS_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": "aws/k8s-aws-alb-script.sh",
+      "depNameTemplate": "kubernetes-sigs/aws-alb-ingress-controller",
+      "matchStrings": ["LBC_VERSION=\"(?<currentValue>.*?)\""],
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "groupName": "eslint",
+      "enabled": true,
+      "matchPackageNames": ["/^eslint/"]
+    },
+    {
+      "groupName": "go",
+      "matchDatasources": ["go"],
+      "enabled": true
+    },
+    {
+      "groupName": "pre-commit",
+      "matchFileNames": [".pre-commit-config.yaml"],
+      "enabled": true
+    },
+    {
+      "groupName": "terraform-aws",
+      "matchDatasources": ["terraform-provider", "terraform-module"],
+      "enabled": true,
+      "matchPackageNames": ["/aws/", "/terraform-aws-modules/.*/"]
+    },
+    {
+      "groupName": "terraform-azure",
+      "matchDatasources": ["terraform-provider", "terraform-module"],
+      "enabled": true,
+      "matchPackageNames": ["/azurerm/"]
+    },
+    {
+      "groupName": "terraform-gcp",
+      "matchDatasources": ["terraform-provider", "terraform-module"],
+      "enabled": true,
+      "matchPackageNames": ["/google/", "/google-beta/"]
+    }
+  ]
 }

@@ -138,36 +138,11 @@ Note that you might have to do some manual cleanups after that.
 The documentation below is auto-generated to give insight on what's created via Terraform.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Requirements
+README.md updated successfully
+shared-state/.terraform/README.md updated successfully
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.1 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.70.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_acm_balancer"></a> [acm\_balancer](#module\_acm\_balancer) | terraform-aws-modules/acm/aws | n/a |
-| <a name="module_acm_ctfd"></a> [acm\_ctfd](#module\_acm\_ctfd) | terraform-aws-modules/acm/aws | n/a |
-| <a name="module_cluster_autoscaler_irsa_role"></a> [cluster\_autoscaler\_irsa\_role](#module\_cluster\_autoscaler\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
-| <a name="module_ebs_csi_irsa_role"></a> [ebs\_csi\_irsa\_role](#module\_ebs\_csi\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
-| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 20.24.2 |
-| <a name="module_external_dns_irsa_role"></a> [external\_dns\_irsa\_role](#module\_external\_dns\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
-| <a name="module_load_balancer_controller_irsa_role"></a> [load\_balancer\_controller\_irsa\_role](#module\_load\_balancer\_controller\_irsa\_role) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.46 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.13.0 |
-
+<!-- BEGIN_TF_DOCS -->
 ## Resources
 
 | Name | Type |
@@ -240,4 +215,4 @@ The documentation below is auto-generated to give insight on what's created via 
 | <a name="output_load_balancer_controller_role_arn"></a> [load\_balancer\_controller\_role\_arn](#output\_load\_balancer\_controller\_role\_arn) | Load balancer controller role arn |
 | <a name="output_secrets_manager_secret_name"></a> [secrets\_manager\_secret\_name](#output\_secrets\_manager\_secret\_name) | The name of the secrets manager secret |
 | <a name="output_state_bucket_name"></a> [state\_bucket\_name](#output\_state\_bucket\_name) | Terraform s3 state bucket name |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

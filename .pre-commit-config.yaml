@@ -1,4 +1,17 @@
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+  autofix_prs: false # managed in the action step
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
 repos:
+  - repo: https://github.com/renovatebot/pre-commit-hooks
+    rev: 39.17.1
+    hooks:
+      - id: renovate-config-validator
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
