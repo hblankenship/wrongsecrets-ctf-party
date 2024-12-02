@@ -48,7 +48,7 @@
   },
   "overrides": {
     "@kubernetes/client-node": {
-      "openid-client": "v5.1.10"
+      "openid-client": "5.7.1"
     }
   },
   "jest": {
