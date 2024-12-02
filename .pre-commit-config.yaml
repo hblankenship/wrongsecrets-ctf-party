@@ -13,7 +13,7 @@ repos:
     hooks:
       - id: renovate-config-validator
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-yaml
         exclude: ^(helm/wrongsecrets-ctf-party/templates/|helm/test.tmp.yaml|azure/k8s/)
